@@ -129,8 +129,8 @@ export default async function HostSettings({
               <Row
                 label="Email"
                 value={
-                  process.env.RESEND_API_KEY
-                    ? (process.env.EMAIL_FROM ?? "onboarding@resend.dev")
+                  process.env.RESEND_API_KEY?.trim()
+                    ? (process.env.EMAIL_FROM?.trim() ?? "onboarding@resend.dev")
                     : "RESEND_API_KEY missing"
                 }
                 ok={Boolean(process.env.RESEND_API_KEY)}

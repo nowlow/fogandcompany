@@ -119,7 +119,8 @@ function renderText(mail: Mail): string {
  */
 export async function sendMail(mail: Mail): Promise<boolean> {
   const key = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM ?? `${APP_NAME} <onboarding@resend.dev>`;
+  const configured = process.env.EMAIL_FROM?.trim();
+  const from = configured || `${APP_NAME} <onboarding@resend.dev>`;
   const to = (Array.isArray(mail.to) ? mail.to : [mail.to]).filter(Boolean);
   if (!to.length) return false;
 
