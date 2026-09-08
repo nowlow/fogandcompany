@@ -8,13 +8,13 @@
     "start": "next start",
     "lint": "next lint",
     "db:push": "drizzle-kit push",
+    "db:secure": "node scripts/secure-db.mjs",
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio",
     "db:local": "node scripts/local-db.mjs"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.3",
-    "@neondatabase/serverless": "^1.1.0",
     "drizzle-orm": "^0.45.2",
     "next": "^15.5.25",
     "next-auth": "^5.0.0-beta.32",

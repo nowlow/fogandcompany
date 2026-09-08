@@ -1,6 +1,4 @@
-import { neon } from "@neondatabase/serverless";
-import { drizzle as drizzleNeon, type NeonHttpDatabase } from "drizzle-orm/neon-http";
-import { drizzle as drizzlePostgres } from "drizzle-orm/postgres-js";
+import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
 
@@ -9,24 +7,19 @@ import * as schema from "./schema";
  * with no database configured; a real query then fails loudly instead of
  * silently doing nothing.
  */
-const PLACEHOLDER = "postgresql://unset:unset@unset.invalid/unset";
+const PLACEHOLDER = "postgresql://unset:unset@unset.invalid:5432/unset";
 
-const url = process.env.DATABASE_URL || PLACEHOLDER;
+/**
+ * One connection per serverless instance and no prepared statements — the
+ * shape Supabase's transaction pooler (and every other PgBouncer-style pooler)
+ * expects. Works unchanged against a plain Postgres, so the same code runs
+ * locally and in production.
+ */
+const client = postgres(process.env.DATABASE_URL || PLACEHOLDER, {
+  max: 1,
+  prepare: false,
+  idle_timeout: 20,
+  connect_timeout: 10,
+});
 
-/** Neon's HTTP driver is serverless-friendly; anything else goes over TCP. */
-const isNeon = /neon\.(tech|build)|unset\.invalid/.test(url);
-
-function connect(): NeonHttpDatabase<typeof schema> {
-  if (isNeon) return drizzleNeon(neon(url), { schema });
-
-  // postgres.js and neon-http expose the same query surface for everything
-  // this app does, so one type covers both call sites.
-  // One connection per serverless instance; `prepare: false` keeps poolers
-  // like PgBouncer happy.
-  const client = postgres(url, { max: 1, prepare: false });
-  return drizzlePostgres(client, { schema }) as unknown as NeonHttpDatabase<
-    typeof schema
-  >;
-}
-
-export const db = connect();
+export const db = drizzle(client, { schema });
