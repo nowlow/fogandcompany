@@ -29,7 +29,8 @@ export default async function Landing() {
   }
 
   return (
-    <main className="flex h-dvh flex-col overflow-hidden">
+    <main className="flex flex-col">
+      <div className="flex h-dvh flex-col">
       <header className="shrink-0 px-6 py-5 sm:px-10">
         <span className="flex items-center gap-2.5">
           <Mark className="h-4 w-auto text-orange" />
@@ -61,15 +62,75 @@ export default async function Landing() {
         </div>
       </div>
 
-      <footer className="shrink-0 pb-5 text-center text-[11.5px] text-ink-faint">
-        <Link href="/privacy" className="hover:text-orange">
-          Privacy
-        </Link>
-        <span className="px-2">·</span>
-        <Link href="/usage" className="hover:text-orange">
-          House rules
-        </Link>
-      </footer>
+        <footer className="shrink-0 pb-5 text-center text-[11.5px] text-ink-faint">
+          <Link href="/privacy" className="hover:text-orange">
+            Privacy
+          </Link>
+          <span className="px-2">·</span>
+          <Link href="/usage" className="hover:text-orange">
+            House rules
+          </Link>
+        </footer>
+      </div>
+
+      {/*
+        Google's OAuth verification requires the homepage to describe what the
+        app does and why it asks for the data it asks for. Kept below the fold
+        so signing in is still the whole first screen.
+      */}
+      <section className="border-t border-rule bg-card/40">
+        <div className="mx-auto max-w-[680px] px-6 py-16 sm:px-10">
+          <h2 className="text-[1.6rem] leading-snug tight">
+            What this is
+          </h2>
+          <div className="mt-4 space-y-4 text-[15px] leading-relaxed text-ink-soft">
+            <p>
+              {APP_NAME} is a private booking page for one person&rsquo;s
+              friends and family. Guests sign in, ask to be let in, and once the
+              host approves them they can see which nights are free, request a
+              stay of their own, bring up to two other people and leave a note.
+              The host accepts or declines each request, and keeps dates for
+              themselves when they need the room.
+            </p>
+            <p>
+              <strong className="font-semibold text-ink">
+                Why it asks for a Google account.
+              </strong>{" "}
+              Signing in with Google tells the site who you are — your name and
+              email address — so the host knows whose booking is whose. That is
+              the only thing it is used for.
+            </p>
+            <p>
+              <strong className="font-semibold text-ink">
+                Why it asks for Google Calendar.
+              </strong>{" "}
+              Only the host is asked for this, and only to write confirmed
+              stays onto a calendar of their choosing and send an invitation to
+              everyone on the booking. Cancelling a stay deletes that event
+              again. The app never reads or changes anything else on the
+              calendar, and guests are never asked for calendar access.
+            </p>
+            <p>
+              Nothing is sold, advertised against, or shared beyond the services
+              needed to run the site. The full detail is in the{" "}
+              <Link
+                href="/privacy"
+                className="text-ink underline underline-offset-4"
+              >
+                privacy policy
+              </Link>{" "}
+              and the{" "}
+              <Link
+                href="/usage"
+                className="text-ink underline underline-offset-4"
+              >
+                house rules
+              </Link>
+              .
+            </p>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
