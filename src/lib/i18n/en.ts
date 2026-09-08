@@ -386,7 +386,7 @@ export const en = {
     backToTrips: "← All your trips",
     manage: "Manage",
     nothingYet: "Nothing added.",
-    track: "Track",
+    track: "Live status on Flightstats",
     hostView: "You're looking at this as the host.",
   },
 

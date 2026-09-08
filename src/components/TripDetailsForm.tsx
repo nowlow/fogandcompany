@@ -6,6 +6,7 @@ import { idle } from "@/actions/state";
 import { SubmitButton, Notice, Labelled } from "./form";
 import { useT } from "./I18n";
 import { parseFlight } from "@/lib/flights";
+import { AirlineLogo } from "./AirlineLogo";
 
 export function TripDetailsForm({
   tripId,
@@ -84,16 +85,21 @@ function FlightHint({ value }: { value: string }) {
   if (!parsed) return null;
 
   return (
-    <p className="mt-1.5 text-[12.5px] text-ink-soft">
-      {parsed.airline ? `${parsed.airline} ${parsed.number} · ` : ""}
-      <a
-        href={parsed.tracker}
-        target="_blank"
-        rel="noreferrer"
-        className="underline underline-offset-4 hover:text-orange"
-      >
-        {t.trip.track} →
-      </a>
+    <p className="mt-1.5 flex items-center gap-2 text-[12.5px] text-ink-soft">
+      {parsed.logo ? (
+        <AirlineLogo src={parsed.logo} alt={parsed.airline ?? parsed.carrier} />
+      ) : null}
+      <span>
+        {parsed.airline ? `${parsed.airline} ${parsed.number} · ` : ""}
+        <a
+          href={parsed.tracker}
+          target="_blank"
+          rel="noreferrer"
+          className="underline underline-offset-4 hover:text-orange"
+        >
+          {t.trip.track} →
+        </a>
+      </span>
     </p>
   );
 }

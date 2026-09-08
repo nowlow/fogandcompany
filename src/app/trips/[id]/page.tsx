@@ -12,6 +12,7 @@ import { formatRange, formatFull, nightsBetween } from "@/lib/dates";
 import { describeTrip } from "@/lib/trip-text";
 import { googleCalendarUrl, outlookCalendarUrl } from "@/lib/ics";
 import { parseFlight } from "@/lib/flights";
+import { AirlineLogo } from "@/components/AirlineLogo";
 
 export const dynamic = "force-dynamic";
 
@@ -232,10 +233,13 @@ async function Detail({
   return (
     <div className="border-b border-rule-soft pb-2">
       <dt className="eyebrow">{label}</dt>
-      <dd className="mt-1 whitespace-pre-line">
-        {value}
+      <dd className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 whitespace-pre-line">
+        {parsed?.logo ? (
+          <AirlineLogo src={parsed.logo} alt={parsed.airline ?? parsed.carrier} />
+        ) : null}
+        <span>{value}</span>
         {parsed ? (
-          <span className="ml-2 text-[13px] text-ink-soft">
+          <span className="text-[13px] text-ink-soft">
             {parsed.airline ? `${parsed.airline} ${parsed.number} · ` : ""}
             <a
               href={parsed.tracker}

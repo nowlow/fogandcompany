@@ -33,10 +33,18 @@ const AIRLINES: Record<string, string> = {
 export type FlightRef = {
   /** what they typed, tidied: "AF083" */
   code: string;
+  carrier: string;
   airline: string | null;
   number: string;
+  /** live status, verified to resolve for IATA designators */
   tracker: string;
+  /** our own endpoint, so the browser never talks to a logo CDN */
+  logo: string | null;
 };
+
+export function isKnownAirline(carrier: string): boolean {
+  return carrier in AIRLINES;
+}
 
 /**
  * IATA designators are two alphanumerics with at least one letter, then one
@@ -52,10 +60,13 @@ export function parseFlight(input: string | null | undefined): FlightRef | null 
 
   const [, carrier, digits] = match;
   const number = String(Number(digits)); // AF083 and AF83 are the same flight
+  const known = carrier in AIRLINES;
   return {
     code: `${carrier}${digits}`,
+    carrier,
     airline: AIRLINES[carrier] ?? null,
     number,
-    tracker: `https://www.flightradar24.com/data/flights/${carrier.toLowerCase()}${number}`,
+    tracker: `https://www.flightstats.com/v2/flight-tracker/${carrier}/${number}`,
+    logo: known ? `/api/airline/${carrier}` : null,
   };
 }

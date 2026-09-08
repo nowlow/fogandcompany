@@ -391,7 +391,7 @@ export const fr: Dict = {
     backToTrips: "← Tous tes séjours",
     manage: "Gérer",
     nothingYet: "Rien d'indiqué.",
-    track: "Suivre",
+    track: "Statut en direct sur Flightstats",
     hostView: "Tu regardes ceci en tant qu'hôte.",
   },
 
