@@ -106,6 +106,7 @@ export const fr: Dict = {
     tipBooked: (who: string) => `${who} — réservé`,
     tipRequested: (who: string) => `${who} — a demandé cette nuit`,
     tipHeld: "L'hôte garde cette nuit",
+    tipDeparts: (who: string) => `${who} repart le matin — la nuit est libre`,
     tipPast: "Dans le passé",
     tipFree: "Libre",
   },
@@ -221,6 +222,11 @@ export const fr: Dict = {
     host: "hôte",
     joined: (date: string) => `Inscrit le ${date}`,
     stays: (n: number) => `${n} séjour${n === 1 ? "" : "s"}`,
+    deletePermanently: "Supprimer définitivement",
+    deleteWarning:
+      "Cela efface le compte, tous les séjours et tous les mots — définitivement. Les séjours annulés reçoivent un e-mail d'abord.",
+    deleteConfirm: "Tout supprimer",
+    deleting: "Suppression…",
     unnamed: "Sans nom",
   },
 
@@ -401,6 +407,7 @@ export const fr: Dict = {
     pickRange: "Choisis une première et une dernière nuit sur le calendrier.",
     endAfterStart: "La fin du blocage doit venir après le début.",
     unknownDecision: "Décision inconnue.",
+    noSelfDelete: "Tu ne peux pas supprimer le compte de l'hôte.",
     noSelfModerate: "Tu ne peux pas te modérer toi-même.",
     personGone: "Cette personne n'a plus de compte.",
     pickCalendar: "Choisis un agenda.",
@@ -425,6 +432,8 @@ export const fr: Dict = {
       `Bloqué, et ${n} séjour${n === 1 ? "" : "s"} annulé${n === 1 ? "" : "s"}.`,
     nightsOpen: "Ces nuits sont de nouveau libres.",
     canBookNow: (name: string) => `${name} peut réserver.`,
+    memberDeleted: (name: string) =>
+      `${name} et tout ce qui lui appartenait ont été supprimés.`,
     accessRemoved: "Accès retiré.",
     accessRemovedWithTrips: (n: number) =>
       `Accès retiré, et ${n} séjour${n === 1 ? "" : "s"} à venir annulé${n === 1 ? "" : "s"}.`,

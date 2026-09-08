@@ -72,6 +72,11 @@ export type CalendarPayload = {
   requested: Record<ISODate, NightInfo>;
   /** nights the host keeps */
   blocked: Record<ISODate, { reason: string | null; blockId: string }>;
+  /**
+   * Days a stay ends. Nobody sleeps here, so the night stays bookable, but
+   * the calendar has to show it or a stay looks a day shorter than it was.
+   */
+  departures: Record<ISODate, NightInfo>;
 };
 
 function firstName(name: string | null | undefined): string {
@@ -120,6 +125,7 @@ export async function loadCalendar(
   const booked: CalendarPayload["booked"] = {};
   const requested: CalendarPayload["requested"] = {};
   const blocked: CalendarPayload["blocked"] = {};
+  const departures: CalendarPayload["departures"] = {};
 
   for (const b of blockRows) {
     for (const night of nightsIn(b.startDate, b.endDate)) {
@@ -136,9 +142,10 @@ export async function loadCalendar(
     for (const night of nightsIn(t.startDate, t.endDate)) {
       target[night] = { who, mine, tripId: t.id };
     }
+    departures[t.endDate] = { who, mine, tripId: t.id };
   }
 
-  return { today: from, horizon, booked, requested, blocked };
+  return { today: from, horizon, booked, requested, blocked, departures };
 }
 
 /* --------------------------------- trips --------------------------------- */

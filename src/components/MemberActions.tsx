@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { decideMember } from "@/actions/host";
+import { decideMember, deleteMember } from "@/actions/host";
 import { idle } from "@/actions/state";
 import { SubmitButton, Notice } from "./form";
 import { useT } from "./I18n";
@@ -21,7 +21,8 @@ export function MemberActions({
     return <p className="text-[12.5px] text-bay">{state.message}</p>;
 
   return (
-    <form action={formAction} className="w-full sm:w-[210px]">
+    <div className="w-full sm:w-[210px]">
+    <form action={formAction}>
       <input type="hidden" name="userId" value={userId} />
 
       {status === "pending" ? (
@@ -87,6 +88,56 @@ export function MemberActions({
         </SubmitButton>
       )}
 
+      <Notice state={state} />
+    </form>
+
+    <DeleteMember userId={userId} />
+    </div>
+  );
+}
+
+/** Irreversible, so it hides behind its own confirmation. */
+function DeleteMember({ userId }: { userId: string }) {
+  const t = useT();
+  const [state, formAction] = useActionState(deleteMember, idle);
+  const [confirming, setConfirming] = useState(false);
+
+  if (state.ok)
+    return <p className="mt-3 text-[12.5px] text-bay">{state.message}</p>;
+
+  if (!confirming) {
+    return (
+      <button
+        type="button"
+        onClick={() => setConfirming(true)}
+        className="btn-quiet mt-3 !text-[11.5px]"
+      >
+        {t.people.deletePermanently}
+      </button>
+    );
+  }
+
+  return (
+    <form action={formAction} className="mt-3 border-t border-rule pt-3">
+      <input type="hidden" name="userId" value={userId} />
+      <p className="text-[12px] leading-snug text-orange-deep">
+        {t.people.deleteWarning}
+      </p>
+      <div className="mt-2 flex gap-2">
+        <SubmitButton
+          pendingLabel={t.people.deleting}
+          className="btn flex-1 !border-orange !bg-orange !py-2 !text-[12px]"
+        >
+          {t.people.deleteConfirm}
+        </SubmitButton>
+        <button
+          type="button"
+          onClick={() => setConfirming(false)}
+          className="btn btn-ghost !py-2 !text-[12px]"
+        >
+          {t.people.keep}
+        </button>
+      </div>
       <Notice state={state} />
     </form>
   );

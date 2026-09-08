@@ -309,6 +309,61 @@ export async function decideMember(
   }
 }
 
+/**
+ * Erase someone entirely — the account, their stays, their notes. The
+ * privacy policy promises exactly this on request, so it is a real delete,
+ * not a flag. Calendar events go first, because deleting the row takes the
+ * event ids with it.
+ */
+export async function deleteMember(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  try {
+    const t = await getDict();
+    const host = await actorHost();
+    const userId = str(form, "userId");
+    if (userId === host.id) return fail(t.errors.noSelfDelete);
+
+    const [person] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+    if (!person) return fail(t.errors.personGone);
+    if (person.role === "host") return fail(t.errors.noSelfDelete);
+
+    const live = await db
+      .select()
+      .from(trips)
+      .where(
+        and(
+          eq(trips.userId, userId),
+          inArray(trips.status, ["pending", "approved"]),
+          gte(trips.endDate, today()),
+        ),
+      );
+
+    for (const trip of live) {
+      if (trip.calendarEventId) {
+        const result = await deleteTripEvent(trip.calendarEventId);
+        if (!result.ok)
+          console.warn("[host] calendar cleanup failed:", result.error);
+      }
+      await guestTripCancelledByHost(trip, person, t.email.accessRemoved);
+    }
+
+    // accounts, sessions and trips all cascade from the user row
+    await db.delete(users).where(eq(users.id, userId));
+
+    revalidatePath("/host", "layout");
+    revalidatePath("/stay");
+    return done(t.ok.memberDeleted(person.displayName ?? person.name ?? ""));
+  } catch (error) {
+    return toState(error);
+  }
+}
+
 /* -------------------------------- settings -------------------------------- */
 
 export async function saveHostSettings(

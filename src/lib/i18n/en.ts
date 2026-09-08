@@ -104,6 +104,7 @@ export const en = {
     tipBooked: (who: string) => `${who} — booked`,
     tipRequested: (who: string) => `${who} — asked for this night`,
     tipHeld: "The host is keeping this night",
+    tipDeparts: (who: string) => `${who} leaves this morning — the night is free`,
     tipPast: "In the past",
     tipFree: "Free",
   },
@@ -219,6 +220,11 @@ export const en = {
     host: "host",
     joined: (date: string) => `Joined ${date}`,
     stays: (n: number) => `${n} stay${n === 1 ? "" : "s"}`,
+    deletePermanently: "Delete permanently",
+    deleteWarning:
+      "This erases the account, every stay and every note — for good. Cancelled stays are emailed first.",
+    deleteConfirm: "Delete everything",
+    deleting: "Deleting…",
     unnamed: "Unnamed",
   },
 
@@ -397,6 +403,7 @@ export const en = {
     pickRange: "Pick a first and last night on the calendar.",
     endAfterStart: "The end of the block has to come after the start.",
     unknownDecision: "Unknown decision.",
+    noSelfDelete: "You can't delete the host account.",
     noSelfModerate: "You can't moderate yourself.",
     personGone: "That person no longer has an account.",
     pickCalendar: "Pick a calendar.",
@@ -420,6 +427,8 @@ export const en = {
       `Blocked, and ${n} ${n === 1 ? "stay was" : "stays were"} cancelled.`,
     nightsOpen: "Those nights are open again.",
     canBookNow: (name: string) => `${name} can book now.`,
+    memberDeleted: (name: string) =>
+      `${name} and everything of theirs is gone.`,
     accessRemoved: "Access removed.",
     accessRemovedWithTrips: (n: number) =>
       `Access removed, and ${n} upcoming ${n === 1 ? "stay was" : "stays were"} cancelled.`,

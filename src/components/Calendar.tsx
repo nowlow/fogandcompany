@@ -153,7 +153,13 @@ export function Calendar({ data, mode, selection, onSelect }: Props) {
                 const selected = inRange(night);
                 const isStart = selection.start === night;
                 const isEnd = rangeEnd === night;
-                const info = data.booked[night] ?? data.requested[night];
+                // Somebody leaves this morning: shown, but still bookable.
+                const departing =
+                  state === "open" && Boolean(data.departures[night]);
+                const info =
+                  data.booked[night] ??
+                  data.requested[night] ??
+                  data.departures[night];
                 const occupant = info
                   ? info.mine
                     ? t.calendar.you
@@ -169,7 +175,14 @@ export function Calendar({ data, mode, selection, onSelect }: Props) {
                     onMouseEnter={() => setHover(night)}
                     onMouseLeave={() => setHover(null)}
                     title={describe(night, state, data, t)}
-                    className={cellClass({ state, selected, isStart, isEnd, taken })}
+                    className={cellClass({
+                      state,
+                      selected,
+                      isStart,
+                      isEnd,
+                      taken,
+                      departing,
+                    })}
                   >
                     <span className="num text-[15px] leading-none">
                       {Number(night.slice(8, 10))}
@@ -220,18 +233,23 @@ function cellClass({
   isStart,
   isEnd,
   taken,
+  departing,
 }: {
   state: NightState;
   selected: boolean;
   isStart: boolean;
   isEnd: boolean;
   taken: boolean;
+  departing: boolean;
 }) {
   const base =
     "relative flex aspect-square flex-col items-center justify-center border-r border-b border-rule-soft transition-colors duration-100";
 
-  if (selected || isStart || (isEnd && !taken))
+  if (selected || isStart)
     return `${base} bg-orange text-card ${isStart ? "shadow-[inset_3px_0_0_var(--color-orange-deep)]" : ""}`;
+
+  // The day you leave: half a cell, the same way a saved stay draws it.
+  if (isEnd && !taken) return `${base} depart-orange bg-card text-ink`;
 
   switch (state) {
     case "past":
@@ -243,7 +261,9 @@ function cellClass({
     case "requested":
       return `${base} dotted bg-card text-ink hover:bg-sun/10`;
     default:
-      return `${base} bg-card text-ink hover:bg-orange/12 hover:text-orange-deep`;
+      return `${base} bg-card text-ink hover:bg-orange/12 hover:text-orange-deep${
+        departing ? " depart-ink" : ""
+      }`;
   }
 }
 
@@ -266,8 +286,14 @@ function describe(
       return data.blocked[night].reason ?? t.calendar.tipHeld;
     case "past":
       return t.calendar.tipPast;
-    default:
+    default: {
+      const leaving = data.departures[night];
+      if (leaving)
+        return t.calendar.tipDeparts(
+          leaving.mine ? t.calendar.you : leaving.who,
+        );
       return t.calendar.tipFree;
+    }
   }
 }
 
