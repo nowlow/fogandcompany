@@ -13,6 +13,8 @@ import {
   tripWithGuest,
 } from "@/lib/availability";
 import { getSettings, saveSettings } from "@/lib/settings";
+import { sendMail } from "@/lib/email";
+import { APP_NAME, CITY, HOST_EMAIL } from "@/lib/constants";
 import {
   createTripEvent,
   deleteTripEvent,
@@ -151,12 +153,13 @@ export async function decideTrip(
       .where(eq(trips.id, tripId))
       .returning();
 
-    await guestTripApproved(updated, row.guest, settings, event.ok);
+    const mail = await guestTripApproved(updated, row.guest, settings, event.ok);
 
     revalidatePath("/host");
     revalidatePath("/stay");
     revalidatePath("/trips");
 
+    if (!mail.ok) return { ok: true, message: t.ok.acceptedNoEmail(mail.error ?? "") };
     return event.ok
       ? done(t.ok.accepted)
       : { ok: true, message: t.ok.acceptedNoCalendar(event.error) };
@@ -267,9 +270,14 @@ export async function decideMember(
         .set({ status: "approved", decidedAt: new Date() })
         .where(eq(users.id, userId))
         .returning();
-      await memberApproved(updated);
+      const mail = await memberApproved(updated);
       revalidatePath("/host", "layout");
-      return done(t.ok.canBookNow(updated.displayName ?? updated.name ?? ""));
+      const name = updated.displayName ?? updated.name ?? updated.email ?? "";
+      return done(
+        mail.ok
+          ? t.ok.canBookNow(name)
+          : t.ok.canBookNowNoEmail(name, mail.error ?? ""),
+      );
     }
 
     if (decision !== "deny") return fail(t.errors.unknownDecision);
@@ -436,6 +444,40 @@ export async function chooseCalendar(
     await saveSettings({ calendarId: match.id, calendarName: match.name });
     revalidatePath("/host/settings");
     return done(t.ok.calendarChosen(match.name));
+  } catch (error) {
+    return toState(error);
+  }
+}
+
+/**
+ * Resend refuses to deliver to anyone but the account owner until a domain is
+ * verified, and the app deliberately swallows send failures so a bounced
+ * notification cannot undo a booking. That combination hides a broken setup,
+ * so this puts the real answer in front of the host.
+ */
+export async function sendTestEmail(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  try {
+    const t = await getDict();
+    await actorHost();
+    const to = str(form, "to") || HOST_EMAIL;
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to))
+      return fail(t.errors.badEmail(to));
+
+    const result = await sendMail({
+      to,
+      subject: t.settings.testSubject,
+      heading: t.settings.testHeading,
+      intro: t.settings.testBody,
+      tone: "good",
+      footer: t.email.footer(APP_NAME, CITY),
+    });
+
+    return result.ok
+      ? done(t.settings.testSent(to))
+      : fail(t.settings.testFailed(result.error ?? ""));
   } catch (error) {
     return toState(error);
   }

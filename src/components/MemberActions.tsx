@@ -25,7 +25,16 @@ export function MemberActions({
     <form action={formAction}>
       <input type="hidden" name="userId" value={userId} />
 
-      {status === "pending" ? (
+      {status === "profile" ? (
+        <SubmitButton
+          name="decision"
+          value="approve"
+          pendingLabel={t.people.opening}
+          className="btn btn-ghost w-full"
+        >
+          {t.people.letThemIn}
+        </SubmitButton>
+      ) : status === "pending" ? (
         <div className="flex gap-2 sm:flex-col">
           <SubmitButton
             name="decision"

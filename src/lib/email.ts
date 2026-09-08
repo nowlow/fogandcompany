@@ -119,18 +119,20 @@ function renderText(mail: Mail): string {
  * Fire-and-forget: a bounced notification must never undo the booking that
  * triggered it. Failures are logged and swallowed.
  */
-export async function sendMail(mail: Mail): Promise<boolean> {
+export type MailResult = { ok: boolean; error?: string };
+
+export async function sendMail(mail: Mail): Promise<MailResult> {
   const key = process.env.RESEND_API_KEY;
   const configured = process.env.EMAIL_FROM?.trim();
   const from = configured || `${APP_NAME} <onboarding@resend.dev>`;
   const to = (Array.isArray(mail.to) ? mail.to : [mail.to]).filter(Boolean);
-  if (!to.length) return false;
+  if (!to.length) return { ok: false, error: "No recipient." };
 
   if (!key) {
     console.warn(
       `[email] RESEND_API_KEY not set, skipped "${mail.subject}" to ${to.join(", ")}`,
     );
-    return false;
+    return { ok: false, error: "RESEND_API_KEY is not set." };
   }
 
   try {
@@ -150,13 +152,20 @@ export async function sendMail(mail: Mail): Promise<boolean> {
       }),
     });
     if (!res.ok) {
-      console.error("[email] resend rejected:", res.status, await res.text());
-      return false;
+      const detail = await res.text();
+      console.error("[email] resend rejected:", res.status, detail);
+      let message = detail;
+      try {
+        message = (JSON.parse(detail) as { message?: string }).message ?? detail;
+      } catch {
+        // not JSON, keep the raw body
+      }
+      return { ok: false, error: message.slice(0, 300) };
     }
-    return true;
+    return { ok: true };
   } catch (error) {
     console.error("[email] send failed:", error);
-    return false;
+    return { ok: false, error: String(error).slice(0, 300) };
   }
 }
 

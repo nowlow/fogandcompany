@@ -39,7 +39,10 @@ export default async function People() {
 
   const waiting = group("pending");
   const approved = group("approved");
-  const declined = [...group("denied"), ...group("profile")];
+  // Signed in but never picked a name. They are not declined, and saying so
+  // reads as though the host turned them away.
+  const unfinished = group("profile");
+  const declined = group("denied");
 
   return (
     <Shell user={host} pendingCount={deskCount}>
@@ -92,6 +95,26 @@ export default async function People() {
           <Empty>{t.people.nobodyLetIn}</Empty>
         )}
       </section>
+
+      {unfinished.length ? (
+        <section className="mt-16">
+          <SectionHeading title={t.people.unfinished} />
+          <p className="-mt-3 mb-5 text-[13px] leading-relaxed text-ink-soft">
+            {t.people.unfinishedHint}
+          </p>
+          <div className="grid gap-4">
+            {unfinished.map((person) => (
+              <PersonCard
+                key={person.id}
+                person={person}
+                actions={
+                  <MemberActions userId={person.id} status={person.status} />
+                }
+              />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {declined.length ? (
         <section className="mt-16">

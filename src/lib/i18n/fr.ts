@@ -209,6 +209,9 @@ export const fr: Dict = {
     nobodyWaiting: "Personne n'attend.",
     letIn: "Acceptés",
     nobodyLetIn: "Personne n'a encore été accepté.",
+    unfinished: "Connectés, jamais terminé",
+    unfinishedHint:
+      "Ils se sont connectés mais n'ont jamais choisi de nom, donc ils n'ont pas encore demandé. Tu peux les accepter maintenant : ils entreront directement une fois le nom choisi.",
     turnedAway: "Refusés",
     letThemIn: "Le faire entrer",
     turnAway: "Refuser",
@@ -268,6 +271,16 @@ export const fr: Dict = {
       `Les alertes concernant les demandes, les annulations et les nouveaux arrivants vont à ${email}.`,
     backToDesk: "Retour à la réception",
     language: "Langue",
+    testEmail: "Vérifier l'envoi des e-mails",
+    testHint:
+      "Envoie-toi un test, puis essaie l'adresse d'un invité. Resend ne livre qu'à ta propre adresse tant qu'un domaine n'est pas vérifié, et c'est comme ça qu'on le découvre.",
+    testPlaceholder: "quelquun@example.com",
+    testSend: "Envoyer un test",
+    testSubject: "Test",
+    testHeading: "Les e-mails fonctionnent",
+    testBody: "Si tu lis ceci, les notifications arrivent à cette adresse.",
+    testSent: (to: string) => `Envoyé à ${to}. Vérifie que c'est bien arrivé.`,
+    testFailed: (error: string) => `Resend a refusé : ${error}`,
     calendarFlash: {
       connected: "Google Agenda est connecté.",
       denied: "Google n'a pas accordé l'accès, rien n'a changé.",
@@ -463,6 +476,10 @@ export const fr: Dict = {
     memberDeleted: (name: string) =>
       `${name} et tout ce qui lui appartenait ont été supprimés.`,
     accessRemoved: "Accès retiré.",
+    canBookNowNoEmail: (name: string, error: string) =>
+      `${name} peut réserver, mais l'e-mail de bienvenue a échoué : ${error}`,
+    acceptedNoEmail: (error: string) =>
+      `Accepté, mais l'e-mail de confirmation a échoué : ${error}`,
     accessRemovedWithTrips: (n: number) =>
       `Accès retiré, et ${n} séjour${n === 1 ? "" : "s"} à venir annulé${n === 1 ? "" : "s"}.`,
     addressEmailed: (n: number) =>

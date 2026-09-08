@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { saveHostSettings, chooseCalendar } from "@/actions/host";
+import { saveHostSettings, chooseCalendar, sendTestEmail } from "@/actions/host";
 import { idle } from "@/actions/state";
 import { SubmitButton, Notice, Labelled } from "./form";
 import type { CalendarChoice } from "@/lib/calendar";
@@ -108,6 +108,30 @@ export function CalendarPicker({
       </Labelled>
       <SubmitButton pendingLabel={t.common.saving} className="btn btn-ghost mt-4">
         {t.settings.useCalendar}
+      </SubmitButton>
+      <Notice state={state} />
+    </form>
+  );
+}
+
+export function TestEmail({ hostEmail }: { hostEmail: string }) {
+  const t = useT();
+  const [state, formAction] = useActionState(sendTestEmail, idle);
+
+  return (
+    <form action={formAction}>
+      <Labelled label={t.settings.testEmail} htmlFor="to" hint={t.settings.testHint}>
+        <input
+          id="to"
+          name="to"
+          type="email"
+          defaultValue={hostEmail}
+          placeholder={t.settings.testPlaceholder}
+          className="field"
+        />
+      </Labelled>
+      <SubmitButton pendingLabel={t.common.sending} className="btn btn-ghost mt-4">
+        {t.settings.testSend}
       </SubmitButton>
       <Notice state={state} />
     </form>

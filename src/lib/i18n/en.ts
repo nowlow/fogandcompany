@@ -207,6 +207,9 @@ export const en = {
     nobodyWaiting: "Nobody is waiting.",
     letIn: "Let in",
     nobodyLetIn: "Nobody has been let in yet.",
+    unfinished: "Signed in, never finished",
+    unfinishedHint:
+      "They signed in but never chose a name, so they haven't asked yet. You can let them in now and they'll go straight through once they do.",
     turnedAway: "Turned away",
     letThemIn: "Let them in",
     turnAway: "Turn away",
@@ -265,6 +268,16 @@ export const en = {
       `Alerts about requests, cancellations and new people go to ${email}.`,
     backToDesk: "Back to the front desk",
     language: "Language",
+    testEmail: "Check email delivery",
+    testHint:
+      "Send yourself a test, then try a guest's address. Resend only delivers to your own address until you verify a domain, and this is how you find out.",
+    testPlaceholder: "someone@example.com",
+    testSend: "Send a test",
+    testSubject: "Test",
+    testHeading: "Email is working",
+    testBody: "If you are reading this, notifications reach this address.",
+    testSent: (to: string) => `Sent to ${to}. Check that it arrives.`,
+    testFailed: (error: string) => `Resend refused it: ${error}`,
     calendarFlash: {
       connected: "Google Calendar is connected.",
       denied: "Google didn't grant access, so nothing changed.",
@@ -458,6 +471,10 @@ export const en = {
     memberDeleted: (name: string) =>
       `${name} and everything of theirs is gone.`,
     accessRemoved: "Access removed.",
+    canBookNowNoEmail: (name: string, error: string) =>
+      `${name} can book now, but the welcome email failed: ${error}`,
+    acceptedNoEmail: (error: string) =>
+      `Accepted, but the confirmation email failed: ${error}`,
     accessRemovedWithTrips: (n: number) =>
       `Access removed, and ${n} upcoming ${n === 1 ? "stay was" : "stays were"} cancelled.`,
     addressEmailed: (n: number) =>

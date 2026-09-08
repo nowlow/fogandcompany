@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireHost } from "@/lib/session";
 import { Shell } from "@/components/Shell";
-import { AddressForm, CalendarPicker } from "@/components/SettingsForm";
+import { AddressForm, CalendarPicker, TestEmail } from "@/components/SettingsForm";
 import { Eyebrow, SectionHeading } from "@/components/ui";
 import { getSettings } from "@/lib/settings";
 import { calendarConnected, listCalendars, googleClient } from "@/lib/calendar";
@@ -106,6 +106,11 @@ export default async function HostSettings({
                 )}
               </div>
             )}
+          </section>
+
+          <section>
+            <SectionHeading title={t.settings.testEmail} />
+            <TestEmail hostEmail={HOST_EMAIL} />
           </section>
 
           <section>
