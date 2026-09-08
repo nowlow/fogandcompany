@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { StatusChip } from "./ui";
 import { formatRange, relativeToToday, toUTC } from "@/lib/dates";
 import type { Trip, User } from "@/lib/schema";
@@ -47,7 +48,12 @@ export async function TripCard({
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <h3 className="text-[1.25rem] leading-tight tight">
-            {formatRange(trip.startDate, trip.endDate, t.intl)}
+            <Link
+              href={`/trips/${trip.id}`}
+              className="underline decoration-rule underline-offset-4 transition-colors hover:decoration-orange"
+            >
+              {formatRange(trip.startDate, trip.endDate, t.intl)}
+            </Link>
           </h3>
           <StatusChip
             status={trip.status}

@@ -15,6 +15,12 @@ import { trips } from "@/lib/schema";
 export const dynamic = "force-dynamic";
 
 
+
+export async function generateMetadata() {
+  const t = await getDict();
+  return { title: t.nav.book };
+}
+
 export default async function Stay({
   searchParams,
 }: {

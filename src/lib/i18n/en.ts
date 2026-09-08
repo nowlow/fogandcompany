@@ -364,6 +364,30 @@ export const en = {
     privacyDate: "8 September 2026",
   },
 
+  trip: {
+    title: "Your stay",
+    arrival: "Arrival",
+    departure: "Departure",
+    travelHeading: "How you're travelling",
+    travelHint: "Flight or train number, or however you're getting here. The host sees it; it goes on the calendar invitation too.",
+    arrivalPlaceholder: "AF083, or driving up from LA",
+    departurePlaceholder: "AF084",
+    noteHeading: "Your message",
+    saveDetails: "Save",
+    addToCalendar: "Put it in your calendar",
+    downloadIcs: "Download .ics",
+    google: "Google Calendar",
+    outlook: "Outlook",
+    icsHint: "The .ics file works with Apple Calendar, Thunderbird and anything else.",
+    whereHeading: "Where",
+    openInMaps: "Open in Maps →",
+    addressPending: "The address arrives with your confirmation.",
+    whoHeading: "Who's coming",
+    backToTrips: "← All your trips",
+    manage: "Manage",
+    hostView: "You're looking at this as the host.",
+  },
+
   errors: {
     signedOut: "You are signed out. Reload the page.",
     notApproved: "Your account is still waiting for approval.",
@@ -390,6 +414,8 @@ export const en = {
       `${range} is already booked. Pick nights that are still open on the calendar.`,
     selfOverlap: (range: string) =>
       `You already have a stay on ${range}. Change that one instead of adding a second.`,
+    travelTooLong: "Keep the flight or train details short.",
+    tripClosed: "This stay is closed — nothing left to edit.",
     tripGone: "That trip no longer exists.",
     notYourTrip: "That isn't your trip.",
     onlyPendingEditable:

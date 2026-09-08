@@ -14,6 +14,12 @@ import { getDict } from "@/lib/i18n";
 export const dynamic = "force-dynamic";
 
 
+
+export async function generateMetadata() {
+  const t = await getDict();
+  return { title: t.settings.title };
+}
+
 export default async function HostSettings({
   searchParams,
 }: {

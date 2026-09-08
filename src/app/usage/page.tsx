@@ -2,6 +2,12 @@ import { LegalPage, Clause } from "@/components/Legal";
 import { APP_NAME, CITY, HOST_EMAIL, MAX_COMPANIONS, MAX_NIGHTS } from "@/lib/constants";
 import { getDict } from "@/lib/i18n";
 
+
+export async function generateMetadata() {
+  const t = await getDict();
+  return { title: t.common.houseRules };
+}
+
 export default async function Usage() {
   const t = await getDict();
   if (t.locale === "fr") return <UsageFr />;

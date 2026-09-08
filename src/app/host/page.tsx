@@ -22,6 +22,12 @@ import { getDict } from "@/lib/i18n";
 export const dynamic = "force-dynamic";
 
 
+
+export async function generateMetadata() {
+  const t = await getDict();
+  return { title: t.nav.frontDesk };
+}
+
 export default async function HostDesk() {
   const user = await requireHost();
   const now = today();

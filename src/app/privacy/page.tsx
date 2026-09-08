@@ -2,6 +2,12 @@ import { LegalPage, Clause } from "@/components/Legal";
 import { APP_NAME, CITY, HOST_EMAIL, MAX_COMPANIONS } from "@/lib/constants";
 import { getDict } from "@/lib/i18n";
 
+
+export async function generateMetadata() {
+  const t = await getDict();
+  return { title: t.common.privacy };
+}
+
 export default async function Privacy() {
   const t = await getDict();
   if (t.locale === "fr") return <PrivacyFr />;

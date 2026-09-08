@@ -36,6 +36,7 @@ import {
   type ISODate,
 } from "@/lib/dates";
 import { getDict, type Dict } from "@/lib/i18n";
+import { describeTrip } from "@/lib/trip-text";
 import { fail, done, str, optionalStr, toState, type ActionState } from "./shared";
 
 function readRange(
@@ -136,7 +137,7 @@ export async function decideTrip(
       companions: row.trip.companions,
       startDate: row.trip.startDate,
       endDate: row.trip.endDate,
-      note: row.trip.note,
+      note: describeTrip(row.trip, row.guest, t).description,
     });
 
     const [updated] = await db

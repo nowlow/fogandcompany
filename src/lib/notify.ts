@@ -40,6 +40,10 @@ function tripFacts(trip: Trip, guest: User, t: Dict): Fact[] {
     },
     { label: t.email.who, value: party(trip, guest, t) },
   ];
+  if (trip.arrivalTravel)
+    facts.push({ label: t.trip.arrival, value: trip.arrivalTravel });
+  if (trip.departureTravel)
+    facts.push({ label: t.trip.departure, value: trip.departureTravel });
   if (trip.note) facts.push({ label: t.email.note, value: trip.note });
   return facts;
 }

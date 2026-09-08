@@ -13,7 +13,8 @@ import {
   hostTripUpdated,
   guestTripReceived,
 } from "@/lib/notify";
-import { deleteTripEvent } from "@/lib/calendar";
+import { deleteTripEvent, updateTripEvent } from "@/lib/calendar";
+import { describeTrip } from "@/lib/trip-text";
 import {
   addDays,
   formatRange,
@@ -193,6 +194,65 @@ export async function updateTrip(
     revalidatePath("/trips");
     revalidatePath("/host");
     return done(t.ok.requestUpdated);
+  } catch (error) {
+    return toState(error);
+  }
+}
+
+/**
+ * The parts of a stay that stay editable after it is confirmed: the note and
+ * how everyone is travelling. Dates and companions are a different matter —
+ * those still need a fresh request.
+ */
+export async function updateTripDetails(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  try {
+    const t = await getDict();
+    const user = await actorApproved();
+    const tripId = str(form, "tripId");
+
+    const row = await tripWithGuest(tripId);
+    if (!row) return fail(t.errors.tripGone);
+    if (row.trip.userId !== user.id && !isHost(user))
+      return fail(t.errors.notYourTrip);
+    if (!["pending", "approved"].includes(row.trip.status))
+      return fail(t.errors.tripClosed);
+
+    const note = optionalStr(form, "note");
+    const arrivalTravel = optionalStr(form, "arrivalTravel");
+    const departureTravel = optionalStr(form, "departureTravel");
+    if (note && note.length > 1000) return fail(t.errors.noteTooLong);
+    if ((arrivalTravel?.length ?? 0) > 120 || (departureTravel?.length ?? 0) > 120)
+      return fail(t.errors.travelTooLong);
+
+    const [updated] = await db
+      .update(trips)
+      .set({ note, arrivalTravel, departureTravel, updatedAt: new Date() })
+      .where(eq(trips.id, tripId))
+      .returning();
+
+    // Keep the invitation everyone already accepted in step with the details.
+    if (updated.status === "approved" && updated.calendarEventId) {
+      const synced = await updateTripEvent(updated.calendarEventId, {
+        tripId: updated.id,
+        guestName: row.guest.displayName ?? row.guest.name ?? "Guest",
+        guestEmail: row.guest.email,
+        companions: updated.companions,
+        startDate: updated.startDate,
+        endDate: updated.endDate,
+        note: describeTrip(updated, row.guest, t).description,
+      });
+      if (!synced.ok) console.warn("[trips] calendar update failed:", synced.error);
+    }
+
+    if (!isHost(user)) await hostTripUpdated(updated, row.guest, row.trip);
+
+    revalidatePath(`/trips/${tripId}`);
+    revalidatePath("/trips");
+    revalidatePath("/host");
+    return done(t.ok.saved);
   } catch (error) {
     return toState(error);
   }

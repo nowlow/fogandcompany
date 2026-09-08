@@ -9,6 +9,12 @@ import { getDict } from "@/lib/i18n";
 export const dynamic = "force-dynamic";
 
 
+
+export async function generateMetadata() {
+  const t = await getDict();
+  return { title: t.lobby.step };
+}
+
 export default async function Lobby() {
   const [user, t] = await Promise.all([requireUser(), getDict()]);
   if (!user.displayName || user.status === "profile") redirect("/welcome");

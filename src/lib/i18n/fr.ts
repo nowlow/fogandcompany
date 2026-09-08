@@ -369,6 +369,30 @@ export const fr: Dict = {
     privacyDate: "8 septembre 2026",
   },
 
+  trip: {
+    title: "Ton séjour",
+    arrival: "Arrivée",
+    departure: "Départ",
+    travelHeading: "Comment tu voyages",
+    travelHint: "Numéro de vol ou de train, ou ta façon d'arriver. L'hôte le voit, et ça figure aussi sur l'invitation d'agenda.",
+    arrivalPlaceholder: "AF083, ou en voiture depuis Los Angeles",
+    departurePlaceholder: "AF084",
+    noteHeading: "Ton message",
+    saveDetails: "Enregistrer",
+    addToCalendar: "Mettre dans ton agenda",
+    downloadIcs: "Télécharger le .ics",
+    google: "Google Agenda",
+    outlook: "Outlook",
+    icsHint: "Le fichier .ics fonctionne avec Apple Calendrier, Thunderbird et le reste.",
+    whereHeading: "Où",
+    openInMaps: "Ouvrir dans Maps →",
+    addressPending: "L'adresse arrive avec ta confirmation.",
+    whoHeading: "Qui vient",
+    backToTrips: "← Tous tes séjours",
+    manage: "Gérer",
+    hostView: "Tu regardes ceci en tant qu'hôte.",
+  },
+
   errors: {
     signedOut: "Tu es déconnecté. Recharge la page.",
     notApproved: "Ton compte attend encore d'être accepté.",
@@ -394,6 +418,8 @@ export const fr: Dict = {
       `${range} est déjà réservé. Choisis des nuits encore libres sur le calendrier.`,
     selfOverlap: (range: string) =>
       `Tu as déjà un séjour du ${range}. Modifie celui-là plutôt que d'en ajouter un second.`,
+    travelTooLong: "Reste bref sur les détails de vol ou de train.",
+    tripClosed: "Ce séjour est clos — plus rien à modifier.",
     tripGone: "Ce séjour n'existe plus.",
     notYourTrip: "Ce n'est pas ton séjour.",
     onlyPendingEditable:

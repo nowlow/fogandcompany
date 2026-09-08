@@ -12,6 +12,12 @@ import { getDict } from "@/lib/i18n";
 export const dynamic = "force-dynamic";
 
 
+
+export async function generateMetadata() {
+  const t = await getDict();
+  return { title: t.trips.title };
+}
+
 export default async function Trips() {
   const user = await requireGuest();
   const [t, rows, settings] = await Promise.all([
