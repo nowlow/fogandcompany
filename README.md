@@ -9,7 +9,7 @@ Everything it runs on has a free tier.
 | Piece | Choice | Free allowance |
 | --- | --- | --- |
 | Hosting | Next.js 15 on Vercel | Hobby plan |
-| Database | Supabase Postgres + Drizzle | 500 MB |
+| Database | Neon Postgres + Drizzle | 0.5 GB |
 | Sign-in | Auth.js v5 — Google & GitHub | unlimited |
 | Email | Resend | 3,000/month |
 | Calendar | Google Calendar API | unlimited |
@@ -61,21 +61,22 @@ still works — you just get told the event failed.
 
 ### 1. Database
 
-Create a project at [supabase.com](https://supabase.com). Then
-**Project Settings → Database → Connection string**, and copy two of them:
+Create a project at [neon.com](https://neon.com) — or add Neon from the Vercel
+dashboard under **Storage**, which wires the variables up for you. Two
+connection strings, both on the project's dashboard:
 
 | Variable | Which one | Why |
 | --- | --- | --- |
-| `DATABASE_URL` | Transaction pooler, port **6543** | What the app runs on. Built for serverless: many short connections, no prepared statements. |
-| `DIRECT_URL` | Session pooler, port **5432** | Only used by `db:push` and `db:secure`. Schema changes need a real session, which a transaction pooler can't give them. |
+| `DATABASE_URL` | pooled — the host ends in `-pooler` | What the app runs on. Built for serverless: many short-lived connections. |
+| `DIRECT_URL` | unpooled | Only used by `db:push`. Schema changes need locks a pooler won't hold. |
 
-Nothing is tied to Supabase specifically — the app speaks plain Postgres over
-one driver. Neon, Railway, Render or a server of your own all work: set
-`DATABASE_URL` and leave `DIRECT_URL` empty.
+Nothing here is tied to Neon — the app speaks plain Postgres over one driver.
+Supabase, Railway, Render or a server of your own all work: set `DATABASE_URL`,
+and `DIRECT_URL` only if that provider has a separate unpooled endpoint.
 
-> **Free tier pauses.** A Supabase project with no traffic for 7 days is paused
-> until you wake it from the dashboard. For a page that goes quiet between
-> visits, that's worth knowing.
+> **Cold starts.** Neon's free tier suspends the database after five minutes of
+> quiet and wakes it on the next connection, so the first page load after a
+> lull takes an extra moment. It wakes by itself — there's nothing to click.
 
 ### 2. Google sign-in and calendar
 
@@ -125,31 +126,19 @@ RESEND_API_KEY, EMAIL_FROM,
 NEXT_PUBLIC_APP_URL
 ```
 
-`DIRECT_URL` is only needed on your own machine for `db:push` and `db:secure` —
-Vercel never uses it.
+`DIRECT_URL` is only needed on your own machine for `db:push` — Vercel never
+uses it.
 `AUTH_SECRET` is any random string — `openssl rand -base64 32`.
 `NEXT_PUBLIC_APP_URL` must be your real URL, since it's what email links and the
 Google redirect are built from.
 
-### 6. Create the tables, then lock them down
+### 6. Create the tables
 
 From your machine, pointing at the production database:
 
 ```bash
-DIRECT_URL="postgresql://…:5432/postgres" npm run db:push
-DIRECT_URL="postgresql://…:5432/postgres" npm run db:secure
+DIRECT_URL="postgresql://…" npm run db:push
 ```
-
-The second command matters on Supabase. Supabase publishes every table in the
-`public` schema through its REST API, so a table with row-level security off is
-readable by anyone holding the project's anon key — including your guest list
-and everyone's email address. `db:secure` switches RLS on for every table,
-adds no policies, and revokes the API roles' grants. That denies the REST API
-everything.
-
-The app is unaffected: it connects as the tables' owner over Postgres, and
-owners aren't subject to RLS. Run it again any time you add a table. On a
-plain Postgres it's harmless — the API roles simply don't exist.
 
 ### 7. Set yourself up
 

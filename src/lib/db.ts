@@ -11,9 +11,9 @@ const PLACEHOLDER = "postgresql://unset:unset@unset.invalid:5432/unset";
 
 /**
  * One connection per serverless instance and no prepared statements — the
- * shape Supabase's transaction pooler (and every other PgBouncer-style pooler)
- * expects. Works unchanged against a plain Postgres, so the same code runs
- * locally and in production.
+ * shape a pooled endpoint expects, whether that's Neon's, Supabase's, or a
+ * PgBouncer of your own. Works unchanged against a plain Postgres too, so the
+ * same code runs locally and in production.
  */
 const client = postgres(process.env.DATABASE_URL || PLACEHOLDER, {
   max: 1,
