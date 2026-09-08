@@ -1,13 +1,10 @@
 import type { DefaultSession } from "next-auth";
+import type { User as Row } from "@/lib/schema";
 
 declare module "next-auth" {
+  /** The whole user row travels on the session — see the session callback. */
   interface Session {
-    user: {
-      id: string;
-      role: "guest" | "host";
-      status: "profile" | "pending" | "approved" | "denied";
-      displayName: string | null;
-    } & DefaultSession["user"];
+    user: Row & DefaultSession["user"];
   }
 }
 

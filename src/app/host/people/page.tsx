@@ -35,21 +35,12 @@ export default async function People() {
 
   return (
     <Shell user={host} pendingCount={deskCount}>
-      <div className="rise mb-10">
-        <Eyebrow>The guest list</Eyebrow>
-        <h1 className="mt-3 text-display leading-[0.92] tight">
-          People
-          <em className="wonky not-italic text-orange">.</em>
-        </h1>
-        <p className="mt-4 max-w-[46ch] leading-relaxed text-ink-soft">
-          Anyone you let in can see which nights are free and ask for them.
-          Nobody sees anyone else&rsquo;s email or notes.
-        </p>
-      </div>
+      <h1 className="rise mb-8 text-[2.4rem] leading-none tight">
+        People<em className="wonky not-italic text-orange">.</em>
+      </h1>
 
       <section>
         <SectionHeading
-          label={`${waiting.length} waiting`}
           title="At the door"
           action={
             <Link href="/host" className="btn-quiet">
@@ -75,7 +66,7 @@ export default async function People() {
       </section>
 
       <section className="mt-16">
-        <SectionHeading label={`${approved.length} welcome`} title="Let in" />
+        <SectionHeading title="Let in" />
         {approved.length ? (
           <div className="grid gap-4">
             {approved.map((person) => (
@@ -96,7 +87,7 @@ export default async function People() {
 
       {declined.length ? (
         <section className="mt-16">
-          <SectionHeading label="Not in" title="Turned away & unfinished" />
+          <SectionHeading title="Turned away" />
           <div className="grid gap-4">
             {declined.map((person) => (
               <PersonCard

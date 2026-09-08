@@ -51,13 +51,9 @@ export default async function HostDesk() {
 
   return (
     <Shell user={user} pendingCount={deskCount}>
-      <div className="rise mb-9">
-        <Eyebrow>Front desk</Eyebrow>
-        <h1 className="mt-3 text-display leading-[0.92] tight">
-          Who&rsquo;s
-          <em className="wonky not-italic text-orange"> coming.</em>
-        </h1>
-      </div>
+      <h1 className="rise mb-7 text-[2.4rem] leading-none tight">
+        Who&rsquo;s<em className="wonky not-italic text-orange"> coming.</em>
+      </h1>
 
       <dl className="rise mb-12 grid gap-px border border-rule bg-rule sm:grid-cols-4">
         {[
@@ -98,10 +94,7 @@ export default async function HostDesk() {
       ) : null}
 
       <section>
-        <SectionHeading
-          label={requests.length ? "Needs an answer" : "All clear"}
-          title="Requests"
-        />
+        <SectionHeading title="Requests" />
         {requests.length ? (
           <div className="grid gap-4">
             {requests.map(({ trip, guest }) => (
@@ -121,7 +114,6 @@ export default async function HostDesk() {
       {waiting.length ? (
         <section className="mt-16">
           <SectionHeading
-            label="Knocking"
             title="People at the door"
             action={
               <Link href="/host/people" className="btn-quiet">
@@ -144,7 +136,7 @@ export default async function HostDesk() {
       ) : null}
 
       <section className="mt-16">
-        <SectionHeading label="On the calendar" title="Confirmed stays" />
+        <SectionHeading title="Confirmed stays" />
         {confirmed.length ? (
           <div className="grid gap-4">
             {confirmed.map(({ trip, guest }) => (
@@ -165,7 +157,6 @@ export default async function HostDesk() {
 
       <section className="mt-20">
         <SectionHeading
-          label="Your own nights"
           title="Block the calendar"
           action={
             blocks.length ? (

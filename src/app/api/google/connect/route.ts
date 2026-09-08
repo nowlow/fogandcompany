@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { currentUser, isHost } from "@/lib/session";
 import { calendarAuthorizeUrl, googleClient } from "@/lib/calendar";
 import { appUrl } from "@/lib/constants";
@@ -17,8 +16,11 @@ export async function GET() {
   }
 
   const state = crypto.randomUUID();
-  const jar = await cookies();
-  jar.set("gcal_state", state, {
+  const response = NextResponse.redirect(calendarAuthorizeUrl(state)!);
+
+  // Cookies must be set on the response itself; `cookies().set()` is dropped
+  // when a route handler returns a redirect it built separately.
+  response.cookies.set("gcal_state", state, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -26,5 +28,15 @@ export async function GET() {
     maxAge: 600,
   });
 
-  return NextResponse.redirect(calendarAuthorizeUrl(state)!);
+  // Remember that we've asked, so declining doesn't bounce the host straight
+  // back into the same consent screen on the next page load.
+  response.cookies.set("gcal_asked", "1", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365,
+  });
+
+  return response;
 }

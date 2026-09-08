@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { and, eq, gt, inArray, lt, ne } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { trips, type Companion } from "@/lib/schema";
-import { actorApproved, ActionError, isHost } from "@/lib/session";
+import { actorApproved, actorGuest, ActionError, isHost } from "@/lib/session";
 import { conflictingBlocks, conflictingTrips, tripWithGuest } from "@/lib/availability";
 import {
   guestTripCancelledByHost,
@@ -13,7 +13,7 @@ import {
   hostTripUpdated,
   guestTripReceived,
 } from "@/lib/notify";
-import { createTripEvent, deleteTripEvent } from "@/lib/calendar";
+import { deleteTripEvent } from "@/lib/calendar";
 import {
   addDays,
   formatRange,
@@ -132,7 +132,7 @@ export async function requestTrip(
   form: FormData,
 ): Promise<ActionState> {
   try {
-    const user = await actorApproved();
+    const user = await actorGuest();
     const { startDate, endDate } = readDates(form);
     const companions = readCompanions(form);
     const note = optionalStr(form, "note");
@@ -144,48 +144,18 @@ export async function requestTrip(
 
     const [trip] = await db
       .insert(trips)
-      .values({
-        userId: user.id,
-        startDate,
-        endDate,
-        companions,
-        note,
-        status: isHost(user) ? "approved" : "pending",
-      })
+      .values({ userId: user.id, startDate, endDate, companions, note })
       .returning();
 
-    if (isHost(user)) {
-      // The host books straight onto the calendar — no one to ask.
-      const event = await createTripEvent({
-        tripId: trip.id,
-        guestName: user.displayName ?? user.name ?? "Host",
-        guestEmail: user.email,
-        companions: trip.companions,
-        startDate: trip.startDate,
-        endDate: trip.endDate,
-        note: trip.note,
-      });
-      if (event.ok) {
-        await db
-          .update(trips)
-          .set({ calendarEventId: event.eventId })
-          .where(eq(trips.id, trip.id));
-      }
-    } else {
-      await Promise.all([
-        hostTripRequested(trip, user),
-        guestTripReceived(trip, user),
-      ]);
-    }
+    await Promise.all([
+      hostTripRequested(trip, user),
+      guestTripReceived(trip, user),
+    ]);
 
     revalidatePath("/stay");
     revalidatePath("/trips");
     revalidatePath("/host");
-    return done(
-      isHost(user)
-        ? "Added to the calendar."
-        : "Request sent. You'll get an email as soon as the host answers.",
-    );
+    return done("Request sent. You'll get an email as soon as the host answers.");
   } catch (error) {
     return toState(error);
   }

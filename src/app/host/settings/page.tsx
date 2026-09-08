@@ -38,13 +38,9 @@ export default async function HostSettings({
 
   return (
     <Shell user={host} pendingCount={deskCount}>
-      <div className="rise mb-10">
-        <Eyebrow>Housekeeping</Eyebrow>
-        <h1 className="mt-3 text-display leading-[0.92] tight">
-          Settings
-          <em className="wonky not-italic text-orange">.</em>
-        </h1>
-      </div>
+      <h1 className="rise mb-8 text-[2.4rem] leading-none tight">
+        Settings<em className="wonky not-italic text-orange">.</em>
+      </h1>
 
       <div className="grid gap-14 lg:grid-cols-[minmax(0,1fr)_360px]">
         <section>

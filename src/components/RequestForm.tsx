@@ -78,21 +78,17 @@ export function RequestForm({ data, maxCompanions, editing }: Props) {
         <input type="hidden" name="endDate" value={selection.end ?? ""} />
 
         <div className="border-t-2 border-ink pt-4">
-          <p className="eyebrow mb-3">
-            {editing ? "Changing your request" : "Your stay"}
-          </p>
-
           {!selection.start ? (
-            <p className="font-display text-[1.6rem] leading-[1.15] text-ink-faint">
-              Pick the day you arrive.
+            <p className="font-display text-[1.5rem] leading-[1.15] text-ink-faint">
+              Pick your arrival.
             </p>
           ) : !selection.end ? (
             <div>
               <p className="font-display text-[1.6rem] leading-[1.15]">
                 Arriving {formatDay(selection.start)}.
               </p>
-              <p className="mt-1 text-sm text-ink-soft">
-                Now choose the day you head off.
+              <p className="mt-1 text-[13px] text-ink-soft">
+                Now the day you leave.
               </p>
             </div>
           ) : (
@@ -122,19 +118,15 @@ export function RequestForm({ data, maxCompanions, editing }: Props) {
           </p>
         ) : null}
 
-        <div className="mt-7 border-t border-rule pt-5">
+        <div className="mt-6 border-t border-rule pt-4">
           <div className="flex items-baseline justify-between">
             <p className="eyebrow">Who&rsquo;s coming</p>
             <span className="text-[11px] text-ink-faint">
-              you + {maxCompanions} max
+              +{maxCompanions} max
             </span>
           </div>
 
-          <p className="mt-2 text-sm text-ink-soft">
-            Just you, unless you add someone.
-          </p>
-
-          <ul className="mt-3 space-y-4">
+          <ul className="mt-2.5 space-y-3">
             {rows.map((row, i) => (
               <li key={i} className="border-l-2 border-rule pl-3">
                 <div className="flex items-center gap-2">
@@ -191,9 +183,9 @@ export function RequestForm({ data, maxCompanions, editing }: Props) {
           ) : null}
         </div>
 
-        <div className="mt-7 border-t border-rule pt-5">
+        <div className="mt-6 border-t border-rule pt-4">
           <label htmlFor="note" className="eyebrow mb-2 block">
-            Anything worth knowing
+            Note
           </label>
           <textarea
             id="note"
@@ -202,12 +194,12 @@ export function RequestForm({ data, maxCompanions, editing }: Props) {
             onChange={(e) => setNote(e.target.value)}
             rows={3}
             maxLength={1000}
-            placeholder="Landing late, bringing the dog, celebrating something…"
+            placeholder="Landing late, bringing the dog…"
             className="field resize-none text-[14px]"
           />
         </div>
 
-        <div className="mt-7 flex items-center gap-3">
+        <div className="mt-6 flex items-center gap-3">
           <SubmitButton
             disabled={!ready}
             pendingLabel={editing ? "Saving…" : "Sending…"}
@@ -221,12 +213,6 @@ export function RequestForm({ data, maxCompanions, editing }: Props) {
             </Link>
           ) : null}
         </div>
-
-        {!ready ? (
-          <p className="mt-2.5 text-xs text-ink-faint">
-            Pick both ends of your stay to send the request.
-          </p>
-        ) : null}
 
         <Notice state={state} />
       </form>

@@ -16,17 +16,16 @@ export function Nav({
   pendingCount?: number;
 }) {
   const path = usePathname();
-  const links = [
-    { href: "/stay", label: "Book a stay" },
-    { href: "/trips", label: "My trips" },
-    ...(host
-      ? [
-          { href: "/host", label: "Front desk" },
-          { href: "/host/people", label: "People" },
-          { href: "/host/settings", label: "Settings" },
-        ]
-      : []),
-  ];
+  const links = host
+    ? [
+        { href: "/host", label: "Front desk" },
+        { href: "/host/people", label: "People" },
+        { href: "/host/settings", label: "Settings" },
+      ]
+    : [
+        { href: "/stay", label: "Book a stay" },
+        { href: "/trips", label: "My trips" },
+      ];
 
   return (
     <header className="sticky top-0 z-40 border-b border-rule bg-paper/85 backdrop-blur-md">

@@ -53,14 +53,14 @@ export function SignIn({ next = "/stay" }: { next?: string }) {
   }
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+    <div className="flex flex-col gap-2.5">
       {enabledProviders.map((provider, i) => (
-        <form action={startSignIn} key={provider.id}>
+        <form action={startSignIn} key={provider.id} className="w-full">
           <input type="hidden" name="provider" value={provider.id} />
           <input type="hidden" name="next" value={next} />
           <button
             type="submit"
-            className={`btn w-full sm:w-auto ${i > 0 ? "btn-ghost" : ""}`}
+            className={`btn w-full ${i > 0 ? "btn-ghost" : ""}`}
           >
             <ProviderMark id={provider.id} />
             {LABEL[provider.id] ?? `Continue with ${provider.name}`}

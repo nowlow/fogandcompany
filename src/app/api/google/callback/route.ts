@@ -1,28 +1,34 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { cookies } from "next/headers";
 import { currentUser, isHost } from "@/lib/session";
-import { exchangeCodeForRefreshToken, forgetCachedToken, listCalendars } from "@/lib/calendar";
+import {
+  exchangeCodeForRefreshToken,
+  forgetCachedToken,
+  listCalendars,
+} from "@/lib/calendar";
 import { getSettings, saveSettings } from "@/lib/settings";
 import { appUrl } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
+
+function finish(path: string) {
+  const response = NextResponse.redirect(appUrl(path));
+  response.cookies.delete("gcal_state");
+  return response;
+}
 
 export async function GET(request: NextRequest) {
   const user = await currentUser();
   if (!isHost(user)) return NextResponse.redirect(appUrl("/"));
 
   const params = request.nextUrl.searchParams;
-  const jar = await cookies();
-  const expected = jar.get("gcal_state")?.value;
-  jar.delete("gcal_state");
+  const expected = request.cookies.get("gcal_state")?.value;
 
-  if (params.get("error")) {
-    return NextResponse.redirect(appUrl("/host/settings?calendar=denied"));
-  }
+  if (params.get("error")) return finish("/host/settings?calendar=denied");
+
   const state = params.get("state");
   const code = params.get("code");
   if (!code || !state || !expected || state !== expected) {
-    return NextResponse.redirect(appUrl("/host/settings?calendar=state"));
+    return finish("/host/settings?calendar=state");
   }
 
   try {
@@ -43,9 +49,9 @@ export async function GET(request: NextRequest) {
         await saveSettings({ calendarId: primary.id, calendarName: primary.name });
     }
 
-    return NextResponse.redirect(appUrl("/host/settings?calendar=connected"));
+    return finish("/host?calendar=connected");
   } catch (error) {
     console.error("[google] connect failed:", error);
-    return NextResponse.redirect(appUrl("/host/settings?calendar=failed"));
+    return finish("/host/settings?calendar=failed");
   }
 }

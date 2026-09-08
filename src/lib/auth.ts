@@ -60,13 +60,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: { signIn: "/", error: "/" },
   callbacks: {
     session({ session, user }) {
-      const row = user as typeof users.$inferSelect;
-      session.user.id = row.id;
-      session.user.role = row.role === "host" ? "host" : "guest";
-      session.user.status =
-        (row.status as "profile" | "pending" | "approved" | "denied") ??
-        "profile";
-      session.user.displayName = row.displayName ?? null;
+      // The adapter fetched the full row to validate the session; pass it
+      // along so pages don't have to ask the database for it again.
+      // Auth.js types `email` as non-null; our column allows null, so the
+      // spread needs a nudge past the structural check.
+      session.user = {
+        ...session.user,
+        ...(user as typeof users.$inferSelect),
+      } as typeof session.user;
       return session;
     },
   },
