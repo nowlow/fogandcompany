@@ -34,10 +34,20 @@ export async function TripCard({
 
   return (
     <article
-      className={`sheet flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:gap-6 ${
+      className={`sheet group relative flex flex-col gap-4 p-5 transition-colors hover:border-ink-faint sm:flex-row sm:items-start sm:gap-6 ${
         dim ? "opacity-60" : ""
       }`}
     >
+      {/*
+        A stretched link: it covers the card so anywhere is clickable, while
+        the actions sit above it on their own stacking level. Wrapping the
+        card in an <a> instead would nest the buttons inside a link.
+      */}
+      <Link
+        href={`/trips/${trip.id}`}
+        aria-label={formatRange(trip.startDate, trip.endDate, t.intl)}
+        className="absolute inset-0 z-10 rounded-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange"
+      />
       <div className="flex shrink-0 flex-row items-baseline gap-2 border-rule sm:w-[74px] sm:flex-col sm:items-center sm:gap-0 sm:border-r sm:pr-5">
         <span className="num text-[34px] leading-none tracking-tight">
           {start.getUTCDate()}
@@ -47,13 +57,8 @@ export async function TripCard({
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <h3 className="text-[1.25rem] leading-tight tight">
-            <Link
-              href={`/trips/${trip.id}`}
-              className="underline decoration-rule underline-offset-4 transition-colors hover:decoration-orange"
-            >
-              {formatRange(trip.startDate, trip.endDate, t.intl)}
-            </Link>
+          <h3 className="text-[1.25rem] leading-tight tight transition-colors group-hover:text-orange-deep">
+            {formatRange(trip.startDate, trip.endDate, t.intl)}
           </h3>
           <StatusChip
             status={trip.status}
@@ -99,7 +104,7 @@ export async function TripCard({
       </div>
 
       {actions ? (
-        <div className="flex shrink-0 flex-wrap items-center gap-2 sm:flex-col sm:items-stretch">
+        <div className="relative z-20 flex shrink-0 flex-wrap items-center gap-2 sm:flex-col sm:items-stretch">
           {actions}
         </div>
       ) : null}
