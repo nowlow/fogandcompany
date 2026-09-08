@@ -385,6 +385,8 @@ export const en = {
     whoHeading: "Who's coming",
     backToTrips: "← All your trips",
     manage: "Manage",
+    nothingYet: "Nothing added.",
+    track: "Track",
     hostView: "You're looking at this as the host.",
   },
 

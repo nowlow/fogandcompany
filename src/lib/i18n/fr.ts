@@ -390,6 +390,8 @@ export const fr: Dict = {
     whoHeading: "Qui vient",
     backToTrips: "← Tous tes séjours",
     manage: "Gérer",
+    nothingYet: "Rien d'indiqué.",
+    track: "Suivre",
     hostView: "Tu regardes ceci en tant qu'hôte.",
   },
 

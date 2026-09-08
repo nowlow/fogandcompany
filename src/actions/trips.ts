@@ -215,8 +215,9 @@ export async function updateTripDetails(
 
     const row = await tripWithGuest(tripId);
     if (!row) return fail(t.errors.tripGone);
-    if (row.trip.userId !== user.id && !isHost(user))
-      return fail(t.errors.notYourTrip);
+    // Only the guest edits their own details — the host can see them, and
+    // cancel the stay, but not rewrite someone else's message.
+    if (row.trip.userId !== user.id) return fail(t.errors.notYourTrip);
     if (!["pending", "approved"].includes(row.trip.status))
       return fail(t.errors.tripClosed);
 
@@ -247,7 +248,7 @@ export async function updateTripDetails(
       if (!synced.ok) console.warn("[trips] calendar update failed:", synced.error);
     }
 
-    if (!isHost(user)) await hostTripUpdated(updated, row.guest, row.trip);
+    await hostTripUpdated(updated, row.guest, row.trip);
 
     revalidatePath(`/trips/${tripId}`);
     revalidatePath("/trips");

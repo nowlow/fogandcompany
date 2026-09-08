@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { updateTripDetails } from "@/actions/trips";
 import { idle } from "@/actions/state";
 import { SubmitButton, Notice, Labelled } from "./form";
 import { useT } from "./I18n";
+import { parseFlight } from "@/lib/flights";
 
 export function TripDetailsForm({
   tripId,
@@ -19,6 +20,8 @@ export function TripDetailsForm({
 }) {
   const t = useT();
   const [state, formAction] = useActionState(updateTripDetails, idle);
+  const [arrival, setArrival] = useState(arrivalTravel);
+  const [departure, setDeparture] = useState(departureTravel);
 
   return (
     <form action={formAction} className="space-y-6">
@@ -29,21 +32,25 @@ export function TripDetailsForm({
           <input
             id="arrivalTravel"
             name="arrivalTravel"
-            defaultValue={arrivalTravel}
+            value={arrival}
+            onChange={(e) => setArrival(e.target.value)}
             maxLength={120}
             placeholder={t.trip.arrivalPlaceholder}
             className="field"
           />
+          <FlightHint value={arrival} />
         </Labelled>
         <Labelled label={t.trip.departure} htmlFor="departureTravel">
           <input
             id="departureTravel"
             name="departureTravel"
-            defaultValue={departureTravel}
+            value={departure}
+            onChange={(e) => setDeparture(e.target.value)}
             maxLength={120}
             placeholder={t.trip.departurePlaceholder}
             className="field"
           />
+          <FlightHint value={departure} />
         </Labelled>
       </div>
       <p className="-mt-2 text-xs leading-relaxed text-ink-faint">
@@ -67,5 +74,26 @@ export function TripDetailsForm({
       </SubmitButton>
       <Notice state={state} />
     </form>
+  );
+}
+
+/** Recognises a flight designator as it's typed and offers a tracker link. */
+function FlightHint({ value }: { value: string }) {
+  const t = useT();
+  const parsed = parseFlight(value);
+  if (!parsed) return null;
+
+  return (
+    <p className="mt-1.5 text-[12.5px] text-ink-soft">
+      {parsed.airline ? `${parsed.airline} ${parsed.number} · ` : ""}
+      <a
+        href={parsed.tracker}
+        target="_blank"
+        rel="noreferrer"
+        className="underline underline-offset-4 hover:text-orange"
+      >
+        {t.trip.track} →
+      </a>
+    </p>
   );
 }

@@ -11,6 +11,7 @@ import { getDict } from "@/lib/i18n";
 import { formatRange, formatFull, nightsBetween } from "@/lib/dates";
 import { describeTrip } from "@/lib/trip-text";
 import { googleCalendarUrl, outlookCalendarUrl } from "@/lib/ics";
+import { parseFlight } from "@/lib/flights";
 
 export const dynamic = "force-dynamic";
 
@@ -82,7 +83,7 @@ export default async function TripPage({
         <div className="space-y-12">
           <section>
             <SectionHeading title={t.trip.travelHeading} />
-            {live ? (
+            {live && mine ? (
               <TripDetailsForm
                 tripId={trip.id}
                 note={trip.note ?? ""}
@@ -91,9 +92,20 @@ export default async function TripPage({
               />
             ) : (
               <dl className="space-y-3 text-[14px]">
-                <Detail label={t.trip.arrival} value={trip.arrivalTravel} />
-                <Detail label={t.trip.departure} value={trip.departureTravel} />
+                <Detail label={t.trip.arrival} value={trip.arrivalTravel} flight />
+                <Detail
+                  label={t.trip.departure}
+                  value={trip.departureTravel}
+                  flight
+                />
                 <Detail label={t.trip.noteHeading} value={trip.note} />
+                {!trip.arrivalTravel &&
+                !trip.departureTravel &&
+                !trip.note ? (
+                  <p className="text-[13.5px] text-ink-faint">
+                    {t.trip.nothingYet}
+                  </p>
+                ) : null}
               </dl>
             )}
           </section>
@@ -204,12 +216,38 @@ export default async function TripPage({
   );
 }
 
-function Detail({ label, value }: { label: string; value: string | null }) {
+async function Detail({
+  label,
+  value,
+  flight,
+}: {
+  label: string;
+  value: string | null;
+  flight?: boolean;
+}) {
   if (!value) return null;
+  const t = await getDict();
+  const parsed = flight ? parseFlight(value) : null;
+
   return (
     <div className="border-b border-rule-soft pb-2">
       <dt className="eyebrow">{label}</dt>
-      <dd className="mt-1 whitespace-pre-line">{value}</dd>
+      <dd className="mt-1 whitespace-pre-line">
+        {value}
+        {parsed ? (
+          <span className="ml-2 text-[13px] text-ink-soft">
+            {parsed.airline ? `${parsed.airline} ${parsed.number} · ` : ""}
+            <a
+              href={parsed.tracker}
+              target="_blank"
+              rel="noreferrer"
+              className="underline underline-offset-4 hover:text-orange"
+            >
+              {t.trip.track} →
+            </a>
+          </span>
+        ) : null}
+      </dd>
     </div>
   );
 }
