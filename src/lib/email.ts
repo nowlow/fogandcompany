@@ -128,7 +128,7 @@ export async function sendMail(mail: Mail): Promise<boolean> {
 
   if (!key) {
     console.warn(
-      `[email] RESEND_API_KEY not set — skipped "${mail.subject}" to ${to.join(", ")}`,
+      `[email] RESEND_API_KEY not set, skipped "${mail.subject}" to ${to.join(", ")}`,
     );
     return false;
   }

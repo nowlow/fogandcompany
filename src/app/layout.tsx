@@ -29,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = await getDict();
   return {
     title: {
-      default: `${APP_NAME} — ${t.landing.title1} ${t.landing.title2}`,
+      default: `${APP_NAME}, ${t.landing.title1} ${t.landing.title2}`,
       template: `%s · ${APP_NAME}`,
     },
     description: t.landing.aboutBody(APP_NAME).slice(0, 160),

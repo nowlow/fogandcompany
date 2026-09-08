@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * A cheap stamp of everything a signed-in page renders. Counts catch
- * deletions, the max timestamps catch edits — all as aggregates in one round
+ * deletions, the max timestamps catch edits, all as aggregates in one round
  * trip, so a poll costs far less than re-rendering a page.
  */
 export async function GET() {

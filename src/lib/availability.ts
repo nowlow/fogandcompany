@@ -57,7 +57,7 @@ export async function conflictingBlocks(
 /* ------------------------------- calendar -------------------------------- */
 
 export type NightInfo = {
-  /** who is staying — first name only for other people's trips */
+  /** who is staying, first name only for other people's trips */
   who: string;
   mine: boolean;
   tripId: string;
@@ -85,7 +85,7 @@ function firstName(name: string | null | undefined): string {
 
 /**
  * Everything the booking calendar needs, in one shot. Names are trimmed to a
- * first name for other people's stays — enough to coordinate, not a directory.
+ * first name for other people's stays, enough to coordinate, not a directory.
  */
 export async function loadCalendar(
   viewer: Pick<User, "id" | "role">,

@@ -4,7 +4,7 @@ import { isKnownAirline } from "@/lib/flights";
  * Serves an airline logo from our own origin.
  *
  * The logo lives on a third-party CDN, and pointing an <img> straight at it
- * would hand that CDN every guest's IP address — which the privacy policy
+ * would hand that CDN every guest's IP address, which the privacy policy
  * says doesn't happen. Fetching it server-side keeps that true: the only
  * thing that leaves here is an airline code.
  */

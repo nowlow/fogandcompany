@@ -42,7 +42,7 @@ export const en = {
       `${app} is a private booking page for one person's friends and family. Guests sign in, ask to be let in, and once the host approves them they can see which nights are free, request a stay of their own, bring up to two other people and leave a note. The host accepts or declines each request, and keeps dates for themselves when they need the room.`,
     whyGoogleHeading: "Why it asks for a Google account.",
     whyGoogleBody:
-      "Signing in with Google tells the site who you are — your name and email address — so the host knows whose booking is whose. That is the only thing it is used for.",
+      "Signing in with Google tells the site who you are: your name and email address, so the host knows whose booking is whose. That is the only thing it is used for.",
     whyCalendarHeading: "Why it asks for Google Calendar.",
     whyCalendarBody:
       "Only the host is asked for this, and only to write confirmed stays onto a calendar of their choosing and send an invitation to everyone on the booking. Cancelling a stay deletes that event again. The app never reads or changes anything else on the calendar, and guests are never asked for calendar access.",
@@ -73,7 +73,7 @@ export const en = {
     titleWaiting: "Hang tight.",
     titleDenied: "Not this time.",
     waiting:
-      "The host has been emailed and needs to let you in before you can see the calendar. You'll get an email the moment that happens — nothing else to do.",
+      "The host has been emailed and needs to let you in before you can see the calendar. You'll get an email the moment that happens. Nothing else to do.",
     deniedPre: "Your request to join wasn't accepted. If that looks like a mistake, write to",
     nameGiven: "Name given",
     signedInAs: "Signed in as",
@@ -100,11 +100,11 @@ export const en = {
     held: "held",
     you: "You",
     trimmed: (day: string) =>
-      `Trimmed to ${day} — the nights after that are already taken.`,
-    tipBooked: (who: string) => `${who} — booked`,
-    tipRequested: (who: string) => `${who} — asked for this night`,
+      `Trimmed to ${day}, because the nights after that are already taken.`,
+    tipBooked: (who: string) => `${who}, booked`,
+    tipRequested: (who: string) => `${who} asked for this night`,
     tipHeld: "The host is keeping this night",
-    tipDeparts: (who: string) => `${who} leaves this morning — the night is free`,
+    tipDeparts: (who: string) => `${who} leaves this morning, so the night is free`,
     tipPast: "In the past",
     tipFree: "Free",
   },
@@ -116,7 +116,7 @@ export const en = {
     inOut: (nights: string, inDay: string, outDay: string) =>
       `${nights} · in ${inDay} · out ${outDay}`,
     contested: (who: string) =>
-      `${who} has also asked for some of these nights. You can still send yours — the host decides.`,
+      `${who} has also asked for some of these nights. You can still send yours; the host decides.`,
     whosComing: "Who's coming",
     max: (n: number) => `+${n} max`,
     theirName: "Their name",
@@ -182,11 +182,11 @@ export const en = {
       "Google Calendar isn't connected, so accepted stays won't create events or send invitations.",
     connectNow: "Connect it now",
     noAddress:
-      "You haven't set an address yet — guests can't see where to go.",
+      "You haven't set an address yet, so guests can't see where to go.",
     addIt: "Add it",
     keepNights: "Keep nights for yourself",
     drawRange: "Draw a range on the calendar.",
-    fromPickEnd: (day: string) => `From ${day} — pick the end.`,
+    fromPickEnd: (day: string) => `From ${day}. Now pick the end.`,
     occasion: "What's the occasion",
     occasionPlaceholder: "Parents visiting, working late…",
     occasionHint: "Guests see this if their dates get cancelled.",
@@ -222,7 +222,7 @@ export const en = {
     stays: (n: number) => `${n} stay${n === 1 ? "" : "s"}`,
     deletePermanently: "Delete permanently",
     deleteWarning:
-      "This erases the account, every stay and every note — for good. Cancelled stays are emailed first.",
+      "This erases the account, every stay and every note, for good. Cancelled stays are emailed first.",
     deleteConfirm: "Delete everything",
     deleting: "Deleting…",
     unnamed: "Unnamed",
@@ -240,7 +240,7 @@ export const en = {
     welcomeLabel: "A word for the booking page",
     welcomeHint: "Shown above the calendar. Leave empty for none.",
     welcomePlaceholder:
-      "The spare room fits two. August is chaos — sorry in advance.",
+      "The spare room fits two. August is chaos, sorry in advance.",
     calendarSection: "Google Calendar",
     connectedAs: "Connected as",
     connectedBody:
@@ -267,7 +267,7 @@ export const en = {
     language: "Language",
     calendarFlash: {
       connected: "Google Calendar is connected.",
-      denied: "Google didn't grant access — nothing changed.",
+      denied: "Google didn't grant access, so nothing changed.",
       state: "That link expired. Try connecting again.",
       failed: "The connection failed. Check the server logs and try again.",
       "missing-client": "Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET first.",
@@ -278,7 +278,7 @@ export const en = {
     dates: "Dates",
     length: "Length",
     lengthValue: (nights: string, arrive: string, leave: string) =>
-      `${nights} — arriving ${arrive}, leaving ${leave}`,
+      `${nights}. Arriving ${arrive}, leaving ${leave}`,
     who: "Who",
     note: "Note",
     reason: "Reason",
@@ -303,7 +303,7 @@ export const en = {
     newMemberHeading: "Someone new knocked",
     newMemberIntro: (name: string, city: string) =>
       `${name} asked to join your ${city} page. Nobody can see the calendar until you let them in.`,
-    approvedSubject: (city: string) => `You're in — come visit ${city}`,
+    approvedSubject: (city: string) => `You're in. Come visit ${city}`,
     approvedHeading: "You're in",
     approvedIntro: "Your account is approved. Pick the dates that suit you and send a request.",
     approvedBody:
@@ -315,7 +315,7 @@ export const en = {
     requestedSubject: (name: string, range: string) => `${name} wants ${range}`,
     requestedHeading: "New stay request",
     requestedIntro: (name: string, nights: string) => `${name} asked for ${nights}.`,
-    receivedSubject: (range: string) => `Request sent — ${range}`,
+    receivedSubject: (range: string) => `Request sent: ${range}`,
     receivedHeading: "Request sent",
     receivedIntro:
       "Your dates are held while the host has a look. You'll get an email either way.",
@@ -323,7 +323,7 @@ export const en = {
     updatedHeading: "A request was edited",
     updatedMoved: (from: string, to: string) => `Moved from ${from} to ${to}.`,
     updatedSame: "The details changed, the dates did not.",
-    confirmedSubject: (range: string, city: string) => `Confirmed — ${range} in ${city}`,
+    confirmedSubject: (range: string, city: string) => `Confirmed: ${range} in ${city}`,
     confirmedHeading: "You're booked",
     confirmedIntro: (day: string) => `See you on ${day}.`,
     confirmedCalendar:
@@ -336,7 +336,7 @@ export const en = {
     cancelledHeadingConfirmed: "A confirmed stay was cancelled",
     cancelledHeadingRequest: "A request was withdrawn",
     cancelledIntro: (name: string) => `${name} cancelled. Those nights are open again.`,
-    byHostSubject: (range: string) => `Cancelled — ${range}`,
+    byHostSubject: (range: string) => `Cancelled: ${range}`,
     byHostHeading: "Your stay was cancelled",
     byHostIntro:
       "Something came up on the host's side and these dates are no longer available.",
@@ -346,7 +346,7 @@ export const en = {
     addressHeading: "The address changed",
     addressIntro: (range: string) => `Where to go for ${range}:`,
     blockReason: (reason: string) =>
-      `The host needs the place on those dates — ${reason}`,
+      `The host needs the place on those dates. ${reason}`,
     blockReasonPlain: "The host needs the place on those dates.",
     accessRemoved: "Your access to the booking page was removed.",
   },
@@ -395,7 +395,7 @@ export const en = {
     notApproved: "Your account is still waiting for approval.",
     hostOnly: "Only the host can do that.",
     hostCannotBook:
-      "You're the host — block the dates you need instead of booking them.",
+      "You're the host. Block the dates you need instead of booking them.",
     nameTooShort: "Give us at least two characters.",
     nameTooLong: "That name is a little long.",
     pickBothDates: "Pick an arrival and a departure date on the calendar.",
@@ -417,7 +417,7 @@ export const en = {
     selfOverlap: (range: string) =>
       `You already have a stay on ${range}. Change that one instead of adding a second.`,
     travelTooLong: "Keep the flight or train details short.",
-    tripClosed: "This stay is closed — nothing left to edit.",
+    tripClosed: "This stay is closed, so there is nothing left to edit.",
     tripGone: "That trip no longer exists.",
     notYourTrip: "That isn't your trip.",
     onlyPendingEditable:
@@ -449,7 +449,7 @@ export const en = {
     declined: (name: string) => `Declined. ${name} have been told.`,
     accepted: "Accepted. Invitations are on their way.",
     acceptedNoCalendar: (error: string) =>
-      `Accepted and the guest has been emailed — but the calendar event failed: ${error}`,
+      `Accepted and the guest has been emailed, but the calendar event failed: ${error}`,
     nightsYours: "Those nights are yours.",
     blockedAndCancelled: (n: number) =>
       `Blocked, and ${n} ${n === 1 ? "stay was" : "stays were"} cancelled.`,

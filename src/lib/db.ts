@@ -10,7 +10,7 @@ import * as schema from "./schema";
 const PLACEHOLDER = "postgresql://unset:unset@unset.invalid:5432/unset";
 
 /**
- * One connection per serverless instance and no prepared statements — the
+ * One connection per serverless instance and no prepared statements, the
  * shape a pooled endpoint expects, whether that's Neon's, Supabase's, or a
  * PgBouncer of your own. Works unchanged against a plain Postgres too, so the
  * same code runs locally and in production.

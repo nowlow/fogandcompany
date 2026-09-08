@@ -10,7 +10,7 @@ import { en } from "@/lib/i18n/en";
 
 /**
  * The dictionary holds functions, which don't survive the server/client
- * boundary — so the server sends the locale and the client looks the
+ * boundary, so the server sends the locale and the client looks the
  * dictionary up from the same modules. Both languages ride along in the
  * bundle, which for two small objects is cheaper than the plumbing to avoid it.
  */

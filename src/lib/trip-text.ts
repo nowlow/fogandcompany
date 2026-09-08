@@ -20,7 +20,7 @@ export function describeTrip(trip: Trip, guest: User, t: Dict) {
     .join("\n");
 
   return {
-    title: `${names[0] ?? "—"}${extras > 0 ? ` +${extras}` : ""} — ${CITY}`,
+    title: `${names[0] || t.people.unnamed}${extras > 0 ? ` +${extras}` : ""}, ${CITY}`,
     description,
   };
 }

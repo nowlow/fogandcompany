@@ -42,7 +42,7 @@ export const fr: Dict = {
       `${app} est une page de réservation privée, réservée aux amis et à la famille d'une seule personne. On se connecte, on demande à entrer, et une fois accepté on voit quelles nuits sont libres, on demande un séjour, on peut amener jusqu'à deux personnes et laisser un mot. L'hôte accepte ou refuse chaque demande, et garde des dates pour lui quand il a besoin de la chambre.`,
     whyGoogleHeading: "Pourquoi un compte Google.",
     whyGoogleBody:
-      "Se connecter avec Google indique au site qui tu es — ton nom et ton adresse e-mail — pour que l'hôte sache à qui appartient chaque réservation. C'est le seul usage qui en est fait.",
+      "Se connecter avec Google indique au site qui tu es : ton nom et ton adresse e-mail, pour que l'hôte sache à qui appartient chaque réservation. C'est le seul usage qui en est fait.",
     whyCalendarHeading: "Pourquoi l'accès à Google Agenda.",
     whyCalendarBody:
       "Seul l'hôte se le voit demander, et uniquement pour inscrire les séjours confirmés dans l'agenda de son choix et envoyer une invitation à toutes les personnes concernées. Annuler un séjour supprime l'événement. L'application ne lit ni ne modifie rien d'autre dans l'agenda, et cet accès n'est jamais demandé aux invités.",
@@ -74,7 +74,7 @@ export const fr: Dict = {
     titleWaiting: "Patience.",
     titleDenied: "Pas cette fois.",
     waiting:
-      "L'hôte a reçu un e-mail et doit t'ouvrir la porte avant que tu puisses voir le calendrier. Tu recevras un e-mail dès que ce sera fait — rien d'autre à faire.",
+      "L'hôte a reçu un e-mail et doit t'ouvrir la porte avant que tu puisses voir le calendrier. Tu recevras un e-mail dès que ce sera fait. Rien d'autre à faire.",
     deniedPre:
       "Ta demande n'a pas été acceptée. Si cela ressemble à une erreur, écris à",
     nameGiven: "Nom donné",
@@ -102,11 +102,11 @@ export const fr: Dict = {
     held: "gardé",
     you: "Toi",
     trimmed: (day: string) =>
-      `Ajusté au ${day} — les nuits suivantes sont déjà prises.`,
-    tipBooked: (who: string) => `${who} — réservé`,
-    tipRequested: (who: string) => `${who} — a demandé cette nuit`,
+      `Ajusté au ${day}, car les nuits suivantes sont déjà prises.`,
+    tipBooked: (who: string) => `${who}, réservé`,
+    tipRequested: (who: string) => `${who} a demandé cette nuit`,
     tipHeld: "L'hôte garde cette nuit",
-    tipDeparts: (who: string) => `${who} repart le matin — la nuit est libre`,
+    tipDeparts: (who: string) => `${who} repart le matin, la nuit est donc libre`,
     tipPast: "Dans le passé",
     tipFree: "Libre",
   },
@@ -118,7 +118,7 @@ export const fr: Dict = {
     inOut: (nights: string, inDay: string, outDay: string) =>
       `${nights} · arrivée ${inDay} · départ ${outDay}`,
     contested: (who: string) =>
-      `${who} a aussi demandé certaines de ces nuits. Tu peux quand même envoyer la tienne — c'est l'hôte qui tranche.`,
+      `${who} a aussi demandé certaines de ces nuits. Tu peux quand même envoyer la tienne ; c'est l'hôte qui tranche.`,
     whosComing: "Qui vient",
     max: (n: number) => `+${n} max`,
     theirName: "Son nom",
@@ -184,11 +184,11 @@ export const fr: Dict = {
       "Google Agenda n'est pas connecté : les séjours acceptés ne créeront pas d'événement et n'enverront pas d'invitation.",
     connectNow: "Le connecter",
     noAddress:
-      "Tu n'as pas encore mis d'adresse — les invités ne savent pas où aller.",
+      "Tu n'as pas encore mis d'adresse, les invités ne savent donc pas où aller.",
     addIt: "L'ajouter",
     keepNights: "Garder des nuits pour toi",
     drawRange: "Trace une période sur le calendrier.",
-    fromPickEnd: (day: string) => `À partir du ${day} — choisis la fin.`,
+    fromPickEnd: (day: string) => `À partir du ${day}. Choisis maintenant la fin.`,
     occasion: "C'est pour quoi",
     occasionPlaceholder: "Mes parents viennent, gros dossier…",
     occasionHint: "Les invités le verront si leurs dates sont annulées.",
@@ -224,7 +224,7 @@ export const fr: Dict = {
     stays: (n: number) => `${n} séjour${n === 1 ? "" : "s"}`,
     deletePermanently: "Supprimer définitivement",
     deleteWarning:
-      "Cela efface le compte, tous les séjours et tous les mots — définitivement. Les séjours annulés reçoivent un e-mail d'abord.",
+      "Cela efface le compte, tous les séjours et tous les mots, définitivement. Les séjours annulés reçoivent un e-mail d'abord.",
     deleteConfirm: "Tout supprimer",
     deleting: "Suppression…",
     unnamed: "Sans nom",
@@ -243,7 +243,7 @@ export const fr: Dict = {
     welcomeLabel: "Un mot sur la page de réservation",
     welcomeHint: "Affiché au-dessus du calendrier. Laisse vide pour rien.",
     welcomePlaceholder:
-      "La chambre d'amis tient à deux. Août est un chaos — désolé d'avance.",
+      "La chambre d'amis tient à deux. Août est un chaos, désolé d'avance.",
     calendarSection: "Google Agenda",
     connectedAs: "Connecté avec",
     connectedBody:
@@ -270,7 +270,7 @@ export const fr: Dict = {
     language: "Langue",
     calendarFlash: {
       connected: "Google Agenda est connecté.",
-      denied: "Google n'a pas accordé l'accès — rien n'a changé.",
+      denied: "Google n'a pas accordé l'accès, rien n'a changé.",
       state: "Ce lien a expiré. Réessaie de connecter.",
       failed: "La connexion a échoué. Regarde les logs du serveur et réessaie.",
       "missing-client":
@@ -282,7 +282,7 @@ export const fr: Dict = {
     dates: "Dates",
     length: "Durée",
     lengthValue: (nights: string, arrive: string, leave: string) =>
-      `${nights} — arrivée le ${arrive}, départ le ${leave}`,
+      `${nights}. Arrivée le ${arrive}, départ le ${leave}`,
     who: "Qui",
     note: "Mot",
     reason: "Raison",
@@ -307,7 +307,7 @@ export const fr: Dict = {
     newMemberHeading: "Quelqu'un frappe à la porte",
     newMemberIntro: (name: string, city: string) =>
       `${name} demande à rejoindre ta page ${city}. Personne ne voit le calendrier tant que tu n'as pas ouvert.`,
-    approvedSubject: (city: string) => `C'est bon — viens à ${city}`,
+    approvedSubject: (city: string) => `C'est bon, viens à ${city}`,
     approvedHeading: "C'est bon",
     approvedIntro:
       "Ton compte est accepté. Choisis les dates qui t'arrangent et envoie une demande.",
@@ -320,7 +320,7 @@ export const fr: Dict = {
     requestedSubject: (name: string, range: string) => `${name} demande ${range}`,
     requestedHeading: "Nouvelle demande de séjour",
     requestedIntro: (name: string, nights: string) => `${name} demande ${nights}.`,
-    receivedSubject: (range: string) => `Demande envoyée — ${range}`,
+    receivedSubject: (range: string) => `Demande envoyée : ${range}`,
     receivedHeading: "Demande envoyée",
     receivedIntro:
       "Tes dates sont réservées le temps que l'hôte regarde. Tu recevras un e-mail dans tous les cas.",
@@ -328,7 +328,7 @@ export const fr: Dict = {
     updatedHeading: "Une demande a été modifiée",
     updatedMoved: (from: string, to: string) => `Déplacée du ${from} au ${to}.`,
     updatedSame: "Les détails ont changé, pas les dates.",
-    confirmedSubject: (range: string, city: string) => `Confirmé — ${range} à ${city}`,
+    confirmedSubject: (range: string, city: string) => `Confirmé : ${range} à ${city}`,
     confirmedHeading: "C'est réservé",
     confirmedIntro: (day: string) => `À ${day}.`,
     confirmedCalendar:
@@ -341,7 +341,7 @@ export const fr: Dict = {
     cancelledHeadingConfirmed: "Un séjour confirmé a été annulé",
     cancelledHeadingRequest: "Une demande a été retirée",
     cancelledIntro: (name: string) => `${name} a annulé. Ces nuits sont de nouveau libres.`,
-    byHostSubject: (range: string) => `Annulé — ${range}`,
+    byHostSubject: (range: string) => `Annulé : ${range}`,
     byHostHeading: "Ton séjour a été annulé",
     byHostIntro:
       "Un imprévu du côté de l'hôte : ces dates ne sont plus disponibles.",
@@ -351,7 +351,7 @@ export const fr: Dict = {
     addressHeading: "L'adresse a changé",
     addressIntro: (range: string) => `Où aller pour le ${range} :`,
     blockReason: (reason: string) =>
-      `L'hôte a besoin du logement à ces dates — ${reason}`,
+      `L'hôte a besoin du logement à ces dates. ${reason}`,
     blockReasonPlain: "L'hôte a besoin du logement à ces dates.",
     accessRemoved: "Ton accès à la page de réservation a été retiré.",
   },
@@ -400,7 +400,7 @@ export const fr: Dict = {
     notApproved: "Ton compte attend encore d'être accepté.",
     hostOnly: "Seul l'hôte peut faire ça.",
     hostCannotBook:
-      "Tu es l'hôte — bloque les dates dont tu as besoin au lieu de les réserver.",
+      "Tu es l'hôte. Bloque les dates dont tu as besoin au lieu de les réserver.",
     nameTooShort: "Il faut au moins deux caractères.",
     nameTooLong: "Ce nom est un peu long.",
     pickBothDates: "Choisis une date d'arrivée et une date de départ sur le calendrier.",
@@ -421,7 +421,7 @@ export const fr: Dict = {
     selfOverlap: (range: string) =>
       `Tu as déjà un séjour du ${range}. Modifie celui-là plutôt que d'en ajouter un second.`,
     travelTooLong: "Reste bref sur les détails de vol ou de train.",
-    tripClosed: "Ce séjour est clos — plus rien à modifier.",
+    tripClosed: "Ce séjour est clos, plus rien à modifier.",
     tripGone: "Ce séjour n'existe plus.",
     notYourTrip: "Ce n'est pas ton séjour.",
     onlyPendingEditable:
@@ -454,7 +454,7 @@ export const fr: Dict = {
     declined: (name: string) => `Refusé. ${name} a été prévenu.`,
     accepted: "Accepté. Les invitations partent.",
     acceptedNoCalendar: (error: string) =>
-      `Accepté et l'invité a reçu son e-mail — mais l'événement d'agenda a échoué : ${error}`,
+      `Accepté et l'invité a reçu son e-mail, mais l'événement d'agenda a échoué : ${error}`,
     nightsYours: "Ces nuits sont à toi.",
     blockedAndCancelled: (n: number) =>
       `Bloqué, et ${n} séjour${n === 1 ? "" : "s"} annulé${n === 1 ? "" : "s"}.`,

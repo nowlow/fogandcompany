@@ -217,7 +217,7 @@
   }
 }
 
-/* the morning someone leaves — half the cell, so a stay reads its real length
+/* the morning someone leaves, half the cell, so a stay reads its real length
    while the night itself stays available to whoever arrives that day */
 .depart-ink {
   background-image: linear-gradient(

@@ -1,6 +1,6 @@
 import { TIMEZONE } from "./constants";
 
-/** All dates in this app are plain `YYYY-MM-DD` strings — no timezone drift. */
+/** All dates in this app are plain `YYYY-MM-DD` strings, no timezone drift. */
 export type ISODate = string;
 
 const DAY = 86_400_000;
@@ -121,7 +121,7 @@ export function formatRange(
   return `${left} – ${right}, ${end.slice(0, 4)}`;
 }
 
-/** "in 3 days" / "today" / "2 weeks ago" — coarse on purpose. */
+/** "in 3 days" / "today" / "2 weeks ago", coarse on purpose. */
 export function relativeToToday(iso: ISODate, locale = "en-US"): string {
   const days = nightsBetween(today(), iso);
   const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });

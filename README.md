@@ -10,7 +10,7 @@ Everything it runs on has a free tier.
 | --- | --- | --- |
 | Hosting | Next.js 15 on Vercel | Hobby plan |
 | Database | Neon Postgres + Drizzle | 0.5 GB |
-| Sign-in | Auth.js v5 — Google & GitHub | unlimited |
+| Sign-in | Auth.js v5, Google & GitHub | unlimited |
 | Email | Resend | 3,000/month |
 | Calendar | Google Calendar API | unlimited |
 
@@ -28,7 +28,7 @@ people at the door, and the calendar you draw your own nights onto. `/host/setti
 holds your address and the Google Calendar connection.
 
 **Nights, not days.** A stay from the 12th to the 15th occupies the nights of
-the 12th, 13th and 14th. Someone else can arrive on the 15th — the same way a
+the 12th, 13th and 14th. Someone else can arrive on the 15th, the same way a
 hotel works.
 
 **What blocks what.** Confirmed stays and nights you've kept are unbookable.
@@ -53,7 +53,7 @@ Accepting a stay creates an all-day event spanning arrival to departure on the
 calendar you picked, and invites the guest plus any companions who left an
 email address. Cancelling, declining or blocking over it deletes the event and
 withdraws the invitations. If the calendar isn't connected, everything else
-still works — you just get told the event failed.
+still works, you just get told the event failed.
 
 ---
 
@@ -61,22 +61,22 @@ still works — you just get told the event failed.
 
 ### 1. Database
 
-Create a project at [neon.com](https://neon.com) — or add Neon from the Vercel
+Create a project at [neon.com](https://neon.com), or add Neon from the Vercel
 dashboard under **Storage**, which wires the variables up for you. Two
 connection strings, both on the project's dashboard:
 
 | Variable | Which one | Why |
 | --- | --- | --- |
-| `DATABASE_URL` | pooled — the host ends in `-pooler` | What the app runs on. Built for serverless: many short-lived connections. |
+| `DATABASE_URL` | pooled, the host ends in `-pooler` | What the app runs on. Built for serverless: many short-lived connections. |
 | `DIRECT_URL` | unpooled | Only used by `db:push`. Schema changes need locks a pooler won't hold. |
 
-Nothing here is tied to Neon — the app speaks plain Postgres over one driver.
+Nothing here is tied to Neon, the app speaks plain Postgres over one driver.
 Supabase, Railway, Render or a server of your own all work: set `DATABASE_URL`,
 and `DIRECT_URL` only if that provider has a separate unpooled endpoint.
 
 > **Cold starts.** Neon's free tier suspends the database after five minutes of
 > quiet and wakes it on the next connection, so the first page load after a
-> lull takes an extra moment. It wakes by itself — there's nothing to click.
+> lull takes an extra moment. It wakes by itself, there's nothing to click.
 
 ### 2. Google sign-in and calendar
 
@@ -111,7 +111,7 @@ Sign up at [resend.com](https://resend.com) and create an API key.
 > Until you verify a domain, Resend only delivers to the address you signed up
 > with, and the sender has to stay `onboarding@resend.dev`. Guests won't get
 > anything. Verifying a domain you already own takes a few DNS records and is
-> free — do that before inviting people.
+> free, do that before inviting people.
 
 ### 5. Deploy
 
@@ -126,9 +126,9 @@ RESEND_API_KEY, EMAIL_FROM,
 NEXT_PUBLIC_APP_URL
 ```
 
-`DIRECT_URL` is only needed on your own machine for `db:push` — Vercel never
+`DIRECT_URL` is only needed on your own machine for `db:push`, Vercel never
 uses it.
-`AUTH_SECRET` is any random string — `openssl rand -base64 32`.
+`AUTH_SECRET` is any random string, `openssl rand -base64 32`.
 `NEXT_PUBLIC_APP_URL` must be your real URL, since it's what email links and the
 Google redirect are built from.
 
@@ -142,7 +142,7 @@ DIRECT_URL="postgresql://…" npm run db:push
 
 ### 7. Set yourself up
 
-Sign in with the address in `HOST_EMAIL` — that account is made host
+Sign in with the address in `HOST_EMAIL`, that account is made host
 automatically. Then:
 
 - **Settings → Connect Google Calendar**, and pick which calendar stays go on.
@@ -156,7 +156,7 @@ Now send people the link.
 
 ```bash
 npm install
-npm run db:local     # a real Postgres, downloaded on first run — no Docker
+npm run db:local     # a real Postgres, downloaded on first run, no Docker
 npm run db:push      # in a second shell: create the tables
 npm run dev
 ```
@@ -194,7 +194,7 @@ Each has an environment variable of the same name.
 
 ```
 src/
-  app/            pages — /, /welcome, /lobby, /stay, /trips, /host/*
+  app/            pages, /, /welcome, /lobby, /stay, /trips, /host/*
   actions/        server actions: account, trips, host
   components/     calendar, forms, cards
   lib/

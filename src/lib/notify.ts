@@ -16,7 +16,7 @@ function nights(trip: Trip, t: Dict): string {
 
 function party(trip: Trip, guest: User, t: Dict): string {
   const names = [
-    guest.displayName ?? guest.name ?? guest.email ?? "—",
+    guest.displayName ?? guest.name ?? guest.email ?? t.people.unnamed,
     ...trip.companions.map((c) => c.name),
   ];
   return names.length > 1
@@ -56,19 +56,20 @@ function partyEmails(trip: Trip, guest: User): string[] {
 }
 
 const footer = (t: Dict) => t.email.footer(APP_NAME, CITY);
-const named = (u: User) => u.displayName ?? u.name ?? u.email ?? "—";
+const named = (u: User, t: Dict) =>
+  u.displayName ?? u.name ?? u.email ?? t.people.unnamed;
 
 /* ------------------------------ membership ------------------------------- */
 
 export async function hostNewMember(user: User) {
   const t = await getDict();
   return hostMail({
-    subject: t.email.newMemberSubject(named(user)),
+    subject: t.email.newMemberSubject(named(user, t)),
     heading: t.email.newMemberHeading,
-    intro: t.email.newMemberIntro(named(user), CITY),
+    intro: t.email.newMemberIntro(named(user, t), CITY),
     facts: [
-      { label: t.email.name, value: named(user) },
-      { label: t.email.signedInAs, value: user.email ?? "—" },
+      { label: t.email.name, value: named(user, t) },
+      { label: t.email.signedInAs, value: user.email ?? t.people.unnamed },
       ...(user.relationship
         ? [{ label: t.email.saysTheyAre, value: user.relationship }]
         : []),
@@ -110,11 +111,11 @@ export async function hostTripRequested(trip: Trip, guest: User) {
   const t = await getDict();
   return hostMail({
     subject: t.email.requestedSubject(
-      named(guest),
+      named(guest, t),
       formatRange(trip.startDate, trip.endDate, t.intl),
     ),
     heading: t.email.requestedHeading,
-    intro: t.email.requestedIntro(named(guest), nights(trip, t)),
+    intro: t.email.requestedIntro(named(guest, t), nights(trip, t)),
     facts: tripFacts(trip, guest, t),
     cta: { label: t.email.acceptOrDecline, url: hostUrl },
     replyTo: guest.email ?? undefined,
@@ -142,7 +143,7 @@ export async function hostTripUpdated(trip: Trip, guest: User, previous: Trip) {
   const movedDates =
     previous.startDate !== trip.startDate || previous.endDate !== trip.endDate;
   return hostMail({
-    subject: t.email.updatedSubject(named(guest)),
+    subject: t.email.updatedSubject(named(guest, t)),
     heading: t.email.updatedHeading,
     intro: movedDates
       ? t.email.updatedMoved(
@@ -215,13 +216,13 @@ export async function hostTripCancelled(
   const wasConfirmed = Boolean(trip.calendarEventId);
   return hostMail({
     subject: t.email.cancelledSubject(
-      named(guest),
+      named(guest, t),
       formatRange(trip.startDate, trip.endDate, t.intl),
     ),
     heading: wasConfirmed
       ? t.email.cancelledHeadingConfirmed
       : t.email.cancelledHeadingRequest,
-    intro: t.email.cancelledIntro(named(guest)),
+    intro: t.email.cancelledIntro(named(guest, t)),
     facts: [
       ...tripFacts(trip, guest, t),
       ...(reason?.trim()
@@ -278,7 +279,7 @@ export function guestAddressChanged(
       formatRange(trip.startDate, trip.endDate, t.intl),
     ),
     facts: [
-      { label: t.email.address, value: settings.address ?? "—" },
+      { label: t.email.address, value: settings.address ?? "" },
       ...(settings.addressNote
         ? [{ label: t.email.gettingIn, value: settings.addressNote }]
         : []),

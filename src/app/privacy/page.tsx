@@ -29,8 +29,9 @@ export default async function Privacy() {
         </p>
         <p>
           <strong>From you:</strong> the name you ask to be called, how you know
-          the host if you say, the dates you request, the names and — if you add
-          them — email addresses of up to {MAX_COMPANIONS} people you bring, and
+          the host if you say, the dates you request, the names of up to{" "}
+          {MAX_COMPANIONS} people you bring, their email addresses if you add
+          them, and
           any note you write on a booking.
         </p>
         <p>
@@ -48,7 +49,7 @@ export default async function Privacy() {
         <p>
           <strong>Other guests</strong> see far less. On the calendar, a night
           someone else has taken shows only their first name and how many people
-          are coming — never their email address, and never their note.
+          are coming. Never their email address, and never their note.
         </p>
         <p>
           <strong>People on your booking</strong> receive the confirmation email
@@ -86,7 +87,7 @@ export default async function Privacy() {
           <a href={`mailto:${HOST_EMAIL}`}>{HOST_EMAIL}</a> and ask. Your
           account, your bookings and your notes will be deleted, and any calendar
           invitations withdrawn. There is no form to fill in and no waiting
-          period — it is one person with a database.
+          period. It is one person with a database.
         </p>
         <p>
           You can also revoke this site&rsquo;s access from your{" "}
@@ -129,7 +130,7 @@ async function PrivacyFr() {
         <p>
           <strong>De toi :</strong> le nom que tu veux qu&rsquo;on utilise,
           comment tu connais l&rsquo;hôte si tu le dis, les dates que tu
-          demandes, les noms et — si tu les ajoutes — les adresses e-mail des{" "}
+          demandes, les noms et, si tu les ajoutes, les adresses e-mail des{" "}
           {MAX_COMPANIONS} personnes maximum que tu amènes, et le mot que tu
           laisses sur une réservation.
         </p>
@@ -148,7 +149,7 @@ async function PrivacyFr() {
         <p>
           <strong>Les autres invités</strong> voient beaucoup moins. Sur le
           calendrier, une nuit prise par quelqu&rsquo;un d&rsquo;autre
-          n&rsquo;affiche que son prénom et le nombre de personnes — jamais son
+          n&rsquo;affiche que son prénom et le nombre de personnes, jamais son
           adresse e-mail, jamais son mot.
         </p>
         <p>
@@ -187,7 +188,7 @@ async function PrivacyFr() {
           Écris à <a href={`mailto:${HOST_EMAIL}`}>{HOST_EMAIL}</a> et demande.
           Ton compte, tes réservations et tes mots seront supprimés, et les
           invitations d&rsquo;agenda retirées. Il n&rsquo;y a pas de formulaire
-          ni de délai — c&rsquo;est une personne avec une base de données.
+          ni de délai : c&rsquo;est une personne avec une base de données.
         </p>
         <p>
           Tu peux aussi révoquer l&rsquo;accès de ce site depuis ton{" "}

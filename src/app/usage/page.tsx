@@ -16,7 +16,7 @@ export default async function Usage() {
       <Clause heading="Invitation only">
         <p>
           {APP_NAME} is a private page for the host&rsquo;s friends and family.
-          Signing in does not get you in — the host has to let you through, and
+          Signing in does not get you in. The host has to let you through, and
           may decline without giving a reason. Access is personal: don&rsquo;t
           pass your account to anyone else.
         </p>
@@ -94,7 +94,7 @@ async function UsageFr() {
           {APP_NAME} est une page privée pour les amis et la famille de
           l&rsquo;hôte. Se connecter ne suffit pas à entrer : l&rsquo;hôte doit
           t&rsquo;ouvrir, et peut refuser sans donner de raison.
-          L&rsquo;accès est personnel — ne passe ton compte à personne.
+          L&rsquo;accès est personnel : ne passe ton compte à personne.
         </p>
       </Clause>
 

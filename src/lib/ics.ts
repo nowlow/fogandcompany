@@ -7,7 +7,7 @@ export type CalendarEvent = {
   location?: string | null;
   /** arrival day */
   start: ISODate;
-  /** departure day — shown inclusively, so the block covers the whole stay */
+  /** departure day, shown inclusively, so the block covers the whole stay */
   end: ISODate;
 };
 

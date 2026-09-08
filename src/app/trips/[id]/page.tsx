@@ -52,7 +52,7 @@ export default async function TripPage({
     end: trip.endDate,
   };
   const party = [
-    guest.displayName ?? guest.name ?? "—",
+    guest.displayName ?? guest.name ?? t.people.unnamed,
     ...trip.companions.map((c) => c.name),
   ];
 

@@ -113,7 +113,7 @@ async function accessToken(): Promise<string | null> {
   if (!res.ok) {
     const detail = await res.text();
     console.error("[calendar] refresh failed:", detail);
-    // A revoked grant is permanent — clear it so the UI prompts to reconnect.
+    // A revoked grant is permanent, clear it so the UI prompts to reconnect.
     if (detail.includes("invalid_grant") && stored.googleRefreshToken) {
       await saveSettings({ googleRefreshToken: null, googleAccountEmail: null });
     }

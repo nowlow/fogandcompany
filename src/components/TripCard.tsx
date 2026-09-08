@@ -27,7 +27,7 @@ export async function TripCard({
       86400000,
   );
   const party = [
-    guest ? (guest.displayName ?? guest.name ?? "—") : t.calendar.you,
+    guest ? (guest.displayName ?? guest.name ?? t.people.unnamed) : t.calendar.you,
     ...trip.companions.map((c) => c.name),
   ];
   const start = toUTC(trip.startDate);

@@ -311,7 +311,7 @@ export async function decideMember(
 }
 
 /**
- * Erase someone entirely — the account, their stays, their notes. The
+ * Erase someone entirely, the account, their stays, their notes. The
  * privacy policy promises exactly this on request, so it is a real delete,
  * not a flag. Calendar events go first, because deleting the row takes the
  * event ids with it.

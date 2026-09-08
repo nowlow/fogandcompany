@@ -102,7 +102,7 @@ export const trips = pgTable(
     // "pending" | "approved" | "denied" | "cancelled"
     status: text("status").notNull().default("pending"),
     note: text("note"),
-    /** Free text — "AF1234", "Eurostar 9024", "driving up from LA". */
+    /** Free text, "AF1234", "Eurostar 9024", "driving up from LA". */
     arrivalTravel: text("arrivalTravel"),
     departureTravel: text("departureTravel"),
     companions: jsonb("companions").$type<Companion[]>().notNull().default([]),

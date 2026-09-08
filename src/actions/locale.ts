@@ -18,7 +18,7 @@ export async function setLocale(formData: FormData) {
     sameSite: "lax",
   });
 
-  // Remember it on the account too, so this person's emails follow suit —
+  // Remember it on the account too, so this person's emails follow suit
   // the cookie only travels with the browser they chose it in.
   const user = await currentUser();
   if (user && user.locale !== next) {

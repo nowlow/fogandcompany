@@ -201,7 +201,7 @@ export async function updateTrip(
 
 /**
  * The parts of a stay that stay editable after it is confirmed: the note and
- * how everyone is travelling. Dates and companions are a different matter —
+ * how everyone is travelling. Dates and companions are a different matter
  * those still need a fresh request.
  */
 export async function updateTripDetails(
@@ -215,7 +215,7 @@ export async function updateTripDetails(
 
     const row = await tripWithGuest(tripId);
     if (!row) return fail(t.errors.tripGone);
-    // Only the guest edits their own details — the host can see them, and
+    // Only the guest edits their own details, the host can see them, and
     // cancel the stay, but not rewrite someone else's message.
     if (row.trip.userId !== user.id) return fail(t.errors.notYourTrip);
     if (!["pending", "approved"].includes(row.trip.status))

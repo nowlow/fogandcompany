@@ -112,7 +112,7 @@ export function BlockForm({
             <ul className="mt-3 space-y-1.5 border-t border-orange/25 pt-3">
               {state.confirm.items.map((item) => (
                 <li key={item} className="text-[13px] leading-snug text-ink-soft">
-                  — {item}
+                 , {item}
                 </li>
               ))}
             </ul>
