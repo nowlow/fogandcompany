@@ -9,6 +9,7 @@ import { idle } from "@/actions/state";
 import type { CalendarPayload } from "@/lib/availability";
 import type { Companion, Trip } from "@/lib/schema";
 import { formatDay, formatRange, nightsBetween, nightsIn } from "@/lib/dates";
+import { useT } from "./I18n";
 
 type Props = {
   data: CalendarPayload;
@@ -19,6 +20,7 @@ type Props = {
 type Row = { name: string; email: string };
 
 export function RequestForm({ data, maxCompanions, editing }: Props) {
+  const t = useT();
   const [state, formAction] = useActionState(
     editing ? updateTrip : requestTrip,
     idle,
@@ -80,32 +82,35 @@ export function RequestForm({ data, maxCompanions, editing }: Props) {
         <div className="border-t-2 border-ink pt-4">
           {!selection.start ? (
             <p className="font-display text-[1.5rem] leading-[1.15] text-ink-faint">
-              Pick your arrival.
+              {t.book.pickArrival}
             </p>
           ) : !selection.end ? (
             <div>
               <p className="font-display text-[1.6rem] leading-[1.15]">
-                Arriving {formatDay(selection.start)}.
+                {t.book.arrivingOn(formatDay(selection.start, t.intl))}
               </p>
               <p className="mt-1 text-[13px] text-ink-soft">
-                Now the day you leave.
+                {t.book.thenLeaving}
               </p>
             </div>
           ) : (
             <div>
               <p className="font-display text-[1.7rem] leading-[1.1] tight">
-                {formatRange(selection.start, selection.end)}
+                {formatRange(selection.start, selection.end, t.intl)}
               </p>
               <p className="num mt-1.5 text-[13px] tracking-wide text-ink-soft">
-                {nights} night{nights === 1 ? "" : "s"} · in{" "}
-                {formatDay(selection.start)} · out {formatDay(selection.end)}
+                {t.book.inOut(
+                  t.common.nights(nights),
+                  formatDay(selection.start, t.intl),
+                  formatDay(selection.end, t.intl),
+                )}
               </p>
               <button
                 type="button"
                 className="btn-quiet mt-1"
                 onClick={() => setSelection({ start: null, end: null })}
               >
-                Start over
+                {t.common.startOver}
               </button>
             </div>
           )}
@@ -113,16 +118,15 @@ export function RequestForm({ data, maxCompanions, editing }: Props) {
 
         {contested ? (
           <p className="mt-4 border-l-2 border-sun py-2 pl-3 text-[13px] leading-relaxed text-ink-soft">
-            {contested} has also asked for some of these nights. You can still
-            send yours — the host decides.
+            {t.book.contested(contested)}
           </p>
         ) : null}
 
         <div className="mt-6 border-t border-rule pt-4">
           <div className="flex items-baseline justify-between">
-            <p className="eyebrow">Who&rsquo;s coming</p>
+            <p className="eyebrow">{t.book.whosComing}</p>
             <span className="text-[11px] text-ink-faint">
-              +{maxCompanions} max
+              {t.book.max(maxCompanions)}
             </span>
           </div>
 
@@ -140,14 +144,14 @@ export function RequestForm({ data, maxCompanions, editing }: Props) {
                         ),
                       )
                     }
-                    placeholder="Their name"
+                    placeholder={t.book.theirName}
                     maxLength={60}
                     className="field"
                     required
                   />
                   <button
                     type="button"
-                    aria-label="Remove"
+                    aria-label={t.book.remove}
                     className="text-ink-faint transition-colors hover:text-orange"
                     onClick={() => setRows(rows.filter((_, j) => j !== i))}
                   >
@@ -164,7 +168,7 @@ export function RequestForm({ data, maxCompanions, editing }: Props) {
                       ),
                     )
                   }
-                  placeholder="Email for the invite (optional)"
+                  placeholder={t.book.theirEmail}
                   type="email"
                   className="field mt-1 text-[13px]"
                 />
@@ -178,14 +182,14 @@ export function RequestForm({ data, maxCompanions, editing }: Props) {
               className="btn-quiet mt-3"
               onClick={() => setRows([...rows, { name: "", email: "" }])}
             >
-              + Add someone
+              {t.book.addSomeone}
             </button>
           ) : null}
         </div>
 
         <div className="mt-6 border-t border-rule pt-4">
           <label htmlFor="note" className="eyebrow mb-2 block">
-            Note
+            {t.book.note}
           </label>
           <textarea
             id="note"
@@ -194,7 +198,7 @@ export function RequestForm({ data, maxCompanions, editing }: Props) {
             onChange={(e) => setNote(e.target.value)}
             rows={3}
             maxLength={1000}
-            placeholder="Landing late, bringing the dog…"
+            placeholder={t.book.notePlaceholder}
             className="field resize-none text-[14px]"
           />
         </div>
@@ -202,14 +206,14 @@ export function RequestForm({ data, maxCompanions, editing }: Props) {
         <div className="mt-6 flex items-center gap-3">
           <SubmitButton
             disabled={!ready}
-            pendingLabel={editing ? "Saving…" : "Sending…"}
+            pendingLabel={editing ? t.common.saving : t.common.sending}
             className="btn flex-1"
           >
-            {editing ? "Save changes" : "Ask to stay"}
+            {editing ? t.book.submitEdit : t.book.submit}
           </SubmitButton>
           {editing ? (
             <Link href="/trips" className="btn btn-ghost">
-              Cancel
+              {t.common.cancel}
             </Link>
           ) : null}
         </div>

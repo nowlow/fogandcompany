@@ -9,13 +9,15 @@ import { listPeople } from "@/lib/availability";
 import { frontDeskCount } from "@/lib/counts";
 import { db } from "@/lib/db";
 import { trips } from "@/lib/schema";
+import { getDict } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "People" };
+
 
 export default async function People() {
   const host = await requireHost();
-  const [people, tallies, deskCount] = await Promise.all([
+  const [t, people, tallies, deskCount] = await Promise.all([
+    getDict(),
     listPeople(),
     db
       .select({ userId: trips.userId, n: count() })
@@ -36,15 +38,15 @@ export default async function People() {
   return (
     <Shell user={host} pendingCount={deskCount}>
       <h1 className="rise mb-8 text-[2.4rem] leading-none tight">
-        People<em className="wonky not-italic text-orange">.</em>
+        {t.people.title}<em className="wonky not-italic text-orange">.</em>
       </h1>
 
       <section>
         <SectionHeading
-          title="At the door"
+          title={t.people.atTheDoor}
           action={
             <Link href="/host" className="btn-quiet">
-              Back to the desk →
+              {t.people.backToDesk}
             </Link>
           }
         />
@@ -61,12 +63,12 @@ export default async function People() {
             ))}
           </div>
         ) : (
-          <Empty>Nobody is waiting.</Empty>
+          <Empty>{t.people.nobodyWaiting}</Empty>
         )}
       </section>
 
       <section className="mt-16">
-        <SectionHeading title="Let in" />
+        <SectionHeading title={t.people.letIn} />
         {approved.length ? (
           <div className="grid gap-4">
             {approved.map((person) => (
@@ -81,13 +83,13 @@ export default async function People() {
             ))}
           </div>
         ) : (
-          <Empty>Nobody has been let in yet.</Empty>
+          <Empty>{t.people.nobodyLetIn}</Empty>
         )}
       </section>
 
       {declined.length ? (
         <section className="mt-16">
-          <SectionHeading title="Turned away" />
+          <SectionHeading title={t.people.turnedAway} />
           <div className="grid gap-4">
             {declined.map((person) => (
               <PersonCard

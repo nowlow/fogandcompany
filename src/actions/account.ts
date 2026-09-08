@@ -7,15 +7,17 @@ import { db } from "@/lib/db";
 import { users } from "@/lib/schema";
 import { currentUser, ActionError } from "@/lib/session";
 import { hostNewMember } from "@/lib/notify";
+import { getDict, getLocale } from "@/lib/i18n";
 import { fail, str, optionalStr, toState, type ActionState } from "./shared";
 
-const profileSchema = z.object({
-  displayName: z
-    .string()
-    .min(2, "Give us at least two characters.")
-    .max(60, "That name is a little long."),
-  relationship: z.string().max(120).nullable(),
-});
+const profileSchema = (t: Awaited<ReturnType<typeof getDict>>) =>
+  z.object({
+    displayName: z
+      .string()
+      .min(2, t.errors.nameTooShort)
+      .max(60, t.errors.nameTooLong),
+    relationship: z.string().max(120).nullable(),
+  });
 
 /** First stop after signing in: say who you are, then wait to be let in. */
 export async function saveProfile(
@@ -23,15 +25,16 @@ export async function saveProfile(
   form: FormData,
 ): Promise<ActionState> {
   try {
+    const t = await getDict();
     const user = await currentUser();
-    if (!user) throw new ActionError("You are signed out. Reload the page.");
+    if (!user) throw new ActionError(t.errors.signedOut);
 
-    const parsed = profileSchema.safeParse({
+    const parsed = profileSchema(t).safeParse({
       displayName: str(form, "displayName"),
       relationship: optionalStr(form, "relationship"),
     });
     if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "Check those details.");
+      return fail(parsed.error.issues[0]?.message ?? t.common.checkDetails);
     }
 
     const firstTime = user.status === "profile";
@@ -44,6 +47,7 @@ export async function saveProfile(
         displayName: parsed.data.displayName,
         relationship: parsed.data.relationship,
         status: nextStatus,
+        locale: await getLocale(),
       })
       .where(eq(users.id, user.id))
       .returning();
@@ -53,7 +57,7 @@ export async function saveProfile(
     }
 
     revalidatePath("/", "layout");
-    return { ok: true, message: "Saved." };
+    return { ok: true, message: t.ok.saved };
   } catch (error) {
     return toState(error);
   }

@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { decideMember } from "@/actions/host";
 import { idle } from "@/actions/state";
 import { SubmitButton, Notice } from "./form";
+import { useT } from "./I18n";
 
 export function MemberActions({
   userId,
@@ -12,6 +13,7 @@ export function MemberActions({
   userId: string;
   status: string;
 }) {
+  const t = useT();
   const [state, formAction] = useActionState(decideMember, idle);
   const [confirming, setConfirming] = useState(false);
 
@@ -27,41 +29,41 @@ export function MemberActions({
           <SubmitButton
             name="decision"
             value="approve"
-            pendingLabel="Opening…"
+            pendingLabel={t.people.opening}
             className="btn flex-1"
           >
-            Let them in
+            {t.people.letThemIn}
           </SubmitButton>
           <SubmitButton
             name="decision"
             value="deny"
-            pendingLabel="Sending…"
+            pendingLabel={t.common.sending}
             className="btn btn-ghost flex-1"
           >
-            Turn away
+            {t.people.turnAway}
           </SubmitButton>
         </div>
       ) : status === "approved" ? (
         confirming ? (
           <div>
             <p className="mb-2 text-[12.5px] leading-snug text-ink-soft">
-              Removing access also cancels their upcoming stays.
+              {t.people.removeWarning}
             </p>
             <div className="flex gap-2">
               <SubmitButton
                 name="decision"
                 value="deny"
-                pendingLabel="Removing…"
+                pendingLabel={t.people.removing}
                 className="btn flex-1 !py-2"
               >
-                Remove
+                {t.people.remove}
               </SubmitButton>
               <button
                 type="button"
                 onClick={() => setConfirming(false)}
                 className="btn btn-ghost !py-2"
               >
-                Keep
+                {t.people.keep}
               </button>
             </div>
           </div>
@@ -71,17 +73,17 @@ export function MemberActions({
             onClick={() => setConfirming(true)}
             className="btn btn-ghost w-full"
           >
-            Remove access
+            {t.people.removeAccess}
           </button>
         )
       ) : (
         <SubmitButton
           name="decision"
           value="approve"
-          pendingLabel="Opening…"
+          pendingLabel={t.people.opening}
           className="btn btn-ghost w-full"
         >
-          Let them in after all
+          {t.people.letInAfterAll}
         </SubmitButton>
       )}
 

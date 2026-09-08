@@ -9,6 +9,7 @@ import {
   startOfMonth,
   type ISODate,
 } from "@/lib/dates";
+import { useT } from "./I18n";
 
 export type Selection = { start: ISODate | null; end: ISODate | null };
 
@@ -22,9 +23,8 @@ type Props = {
   onSelect: (selection: Selection) => void;
 };
 
-const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
-
 export function Calendar({ data, mode, selection, onSelect }: Props) {
+  const t = useT();
   const [cursor, setCursor] = useState<ISODate>(startOfMonth(data.today));
   const [hover, setHover] = useState<ISODate | null>(null);
   const [hint, setHint] = useState<string | null>(null);
@@ -73,9 +73,7 @@ export function Calendar({ data, mode, selection, onSelect }: Props) {
         return;
       }
       onSelect({ start, end: collision });
-      setHint(
-        `Trimmed to ${label(collision)} — the nights after that are already taken.`,
-      );
+      setHint(t.calendar.trimmed(label(collision, t.intl)));
       return;
     }
     onSelect({ start, end: day });
@@ -98,7 +96,7 @@ export function Calendar({ data, mode, selection, onSelect }: Props) {
       <header className="mb-4 flex items-center justify-between">
         <button
           type="button"
-          aria-label="Previous month"
+          aria-label={t.calendar.previousMonth}
           disabled={cursor <= firstMonth}
           onClick={() => setCursor(addMonths(cursor, -1))}
           className="btn-ghost btn h-9 w-9 !p-0 disabled:opacity-25"
@@ -108,16 +106,16 @@ export function Calendar({ data, mode, selection, onSelect }: Props) {
 
         <div className="flex flex-1 items-baseline justify-center gap-10">
           <h3 className="text-center text-[1.35rem] tight">
-            {formatMonthLabel(months[0])}
+            {formatMonthLabel(months[0], t.intl)}
           </h3>
           <h3 className="hidden text-center text-[1.35rem] tight lg:block">
-            {formatMonthLabel(months[1])}
+            {formatMonthLabel(months[1], t.intl)}
           </h3>
         </div>
 
         <button
           type="button"
-          aria-label="Next month"
+          aria-label={t.calendar.nextMonth}
           disabled={cursor >= lastMonth}
           onClick={() => setCursor(addMonths(cursor, 1))}
           className="btn-ghost btn h-9 w-9 !p-0 disabled:opacity-25"
@@ -130,7 +128,7 @@ export function Calendar({ data, mode, selection, onSelect }: Props) {
         {months.map((month, index) => (
           <div key={month} className={index === 1 ? "hidden lg:block" : ""}>
             <div className="mb-1 grid grid-cols-7">
-              {WEEKDAYS.map((day, i) => (
+              {t.calendar.weekdays.map((day, i) => (
                 <span
                   key={i}
                   className="eyebrow py-1 text-center !tracking-[0.1em]"
@@ -155,8 +153,12 @@ export function Calendar({ data, mode, selection, onSelect }: Props) {
                 const selected = inRange(night);
                 const isStart = selection.start === night;
                 const isEnd = rangeEnd === night;
-                const occupant =
-                  data.booked[night]?.who ?? data.requested[night]?.who;
+                const info = data.booked[night] ?? data.requested[night];
+                const occupant = info
+                  ? info.mine
+                    ? t.calendar.you
+                    : info.who
+                  : undefined;
 
                 return (
                   <button
@@ -166,7 +168,7 @@ export function Calendar({ data, mode, selection, onSelect }: Props) {
                     onClick={() => pick(night)}
                     onMouseEnter={() => setHover(night)}
                     onMouseLeave={() => setHover(null)}
-                    title={describe(night, state, data)}
+                    title={describe(night, state, data, t)}
                     className={cellClass({ state, selected, isStart, isEnd, taken })}
                   >
                     <span className="num text-[15px] leading-none">
@@ -179,7 +181,7 @@ export function Calendar({ data, mode, selection, onSelect }: Props) {
                     ) : null}
                     {state === "blocked" && !selected ? (
                       <span className="mt-0.5 text-[9px] uppercase tracking-wider opacity-70">
-                        held
+                        {t.calendar.held}
                       </span>
                     ) : null}
                   </button>
@@ -191,11 +193,11 @@ export function Calendar({ data, mode, selection, onSelect }: Props) {
       </div>
 
       <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-rule pt-4">
-        <Legend swatch="border border-rule-soft bg-card" label="Free" />
-        <Legend swatch="bg-ink" label="Booked" />
-        <Legend swatch="hatch border border-rule-soft" label="Kept by host" />
-        <Legend swatch="dotted border border-rule-soft" label="Requested" />
-        <Legend swatch="bg-orange" label="Your selection" />
+        <Legend swatch="border border-rule-soft bg-card" label={t.calendar.free} />
+        <Legend swatch="bg-ink" label={t.calendar.booked} />
+        <Legend swatch="hatch border border-rule-soft" label={t.calendar.heldByHost} />
+        <Legend swatch="dotted border border-rule-soft" label={t.calendar.requested} />
+        <Legend swatch="bg-orange" label={t.calendar.yourSelection} />
       </div>
 
       {hint ? <p className="mt-3 text-[13px] text-orange-deep">{hint}</p> : null}
@@ -245,18 +247,27 @@ function cellClass({
   }
 }
 
-function describe(night: ISODate, state: NightState, data: CalendarPayload) {
+function describe(
+  night: ISODate,
+  state: NightState,
+  data: CalendarPayload,
+  t: ReturnType<typeof useT>,
+) {
   switch (state) {
     case "booked":
-      return `${data.booked[night].who} — booked`;
+      return t.calendar.tipBooked(
+        data.booked[night].mine ? t.calendar.you : data.booked[night].who,
+      );
     case "requested":
-      return `${data.requested[night].who} — asked for this night`;
+      return t.calendar.tipRequested(
+        data.requested[night].mine ? t.calendar.you : data.requested[night].who,
+      );
     case "blocked":
-      return data.blocked[night].reason ?? "The host is keeping this night";
+      return data.blocked[night].reason ?? t.calendar.tipHeld;
     case "past":
-      return "In the past";
+      return t.calendar.tipPast;
     default:
-      return "Free";
+      return t.calendar.tipFree;
   }
 }
 
@@ -267,8 +278,8 @@ function shift(iso: ISODate): ISODate {
   return d.toISOString().slice(0, 10);
 }
 
-function label(iso: ISODate): string {
-  return new Intl.DateTimeFormat("en-US", {
+function label(iso: ISODate, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
     month: "short",
     day: "numeric",
     timeZone: "UTC",

@@ -5,6 +5,7 @@ import { and, eq, gte, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { blocks, trips, users, type Trip, type User } from "@/lib/schema";
 import { actorHost } from "@/lib/session";
+import { ActionError } from "@/lib/errors";
 import {
   conflictingBlocks,
   conflictingTrips,
@@ -30,19 +31,22 @@ import {
 import {
   formatRange,
   isISODate,
-  nightsLabel,
+  nightsBetween,
   today,
   type ISODate,
 } from "@/lib/dates";
+import { getDict, type Dict } from "@/lib/i18n";
 import { fail, done, str, optionalStr, toState, type ActionState } from "./shared";
 
-function readRange(form: FormData): { startDate: ISODate; endDate: ISODate } {
+function readRange(
+  form: FormData,
+  t: Dict,
+): { startDate: ISODate; endDate: ISODate } {
   const startDate = str(form, "startDate");
   const endDate = str(form, "endDate");
   if (!isISODate(startDate) || !isISODate(endDate))
-    throw new Error("Pick a first and last night on the calendar.");
-  if (endDate <= startDate)
-    throw new Error("The end of the block has to come after the start.");
+    throw new ActionError(t.errors.pickRange);
+  if (endDate <= startDate) throw new ActionError(t.errors.endAfterStart);
   return { startDate, endDate };
 }
 
@@ -78,15 +82,20 @@ export async function decideTrip(
   form: FormData,
 ): Promise<ActionState> {
   try {
+    const t = await getDict();
     await actorHost();
     const tripId = str(form, "tripId");
     const decision = str(form, "decision");
     const reason = optionalStr(form, "reason");
 
     const row = await tripWithGuest(tripId);
-    if (!row) return fail("That request no longer exists.");
+    if (!row) return fail(t.errors.requestGone);
     if (row.trip.status !== "pending")
-      return fail(`That request is already ${row.trip.status}.`);
+      return fail(
+        t.errors.alreadyDecided(
+          t.status[row.trip.status as keyof typeof t.status] ?? row.trip.status,
+        ),
+      );
 
     if (decision === "deny") {
       const [updated] = await db
@@ -97,10 +106,10 @@ export async function decideTrip(
       await guestTripDenied(updated, row.guest, reason);
       revalidatePath("/host");
       revalidatePath("/trips");
-      return done(`Declined. ${row.guest.displayName ?? "They"} have been told.`);
+      return done(t.ok.declined(row.guest.displayName ?? row.guest.name ?? ""));
     }
 
-    if (decision !== "approve") return fail("Unknown decision.");
+    if (decision !== "approve") return fail(t.errors.unknownDecision);
 
     const [taken, blocked] = await Promise.all([
       conflictingTrips(row.trip.startDate, row.trip.endDate, ["approved"], tripId),
@@ -108,11 +117,15 @@ export async function decideTrip(
     ]);
     if (blocked.length)
       return fail(
-        `You've kept ${formatRange(blocked[0].startDate, blocked[0].endDate)} for yourself. Remove that block first if you want to accept this.`,
+        t.errors.unblockFirst(
+          formatRange(blocked[0].startDate, blocked[0].endDate, t.intl),
+        ),
       );
     if (taken.length)
       return fail(
-        `Those nights collide with a stay you already confirmed (${formatRange(taken[0].startDate, taken[0].endDate)}). Cancel that one first.`,
+        t.errors.collides(
+          formatRange(taken[0].startDate, taken[0].endDate, t.intl),
+        ),
       );
 
     const settings = await getSettings();
@@ -144,11 +157,8 @@ export async function decideTrip(
     revalidatePath("/trips");
 
     return event.ok
-      ? done("Accepted. Invitations are on their way.")
-      : {
-          ok: true,
-          message: `Accepted and the guest has been emailed — but the calendar event failed: ${event.error}`,
-        };
+      ? done(t.ok.accepted)
+      : { ok: true, message: t.ok.acceptedNoCalendar(event.error) };
   } catch (error) {
     return toState(error);
   }
@@ -161,8 +171,9 @@ export async function blockDates(
   form: FormData,
 ): Promise<ActionState> {
   try {
+    const t = await getDict();
     await actorHost();
-    const { startDate, endDate } = readRange(form);
+    const { startDate, endDate } = readRange(form, t);
     const reason = optionalStr(form, "reason");
     const force = str(form, "force") === "yes";
 
@@ -175,12 +186,15 @@ export async function blockDates(
       return {
         confirm: {
           token: `${startDate}:${endDate}`,
-          title: `${clashes.length} ${clashes.length === 1 ? "stay is" : "stays are"} already on those dates`,
-          detail:
-            "Blocking these nights will cancel them. Everyone affected gets an email, and any calendar invitations are withdrawn.",
+          title: t.block.conflictTitle(clashes.length),
+          detail: t.block.conflictDetail,
           items: clashes.map(({ trip, guest }) => {
-            const label = trip.status === "approved" ? "confirmed" : "requested";
-            return `${guest.displayName ?? guest.name} · ${formatRange(trip.startDate, trip.endDate)} · ${nightsLabel(trip.startDate, trip.endDate)} · ${label}`;
+            const label =
+              t.status[trip.status as keyof typeof t.status] ?? trip.status;
+            const n = t.common.nights(
+              nightsBetween(trip.startDate, trip.endDate),
+            );
+            return `${guest.displayName ?? guest.name} · ${formatRange(trip.startDate, trip.endDate, t.intl)} · ${n} · ${label}`;
           }),
         },
       };
@@ -193,8 +207,8 @@ export async function blockDates(
         trip,
         guest,
         reason?.trim()
-          ? `The host needs the place on those dates — ${reason.trim()}`
-          : "The host needs the place on those dates.",
+          ? t.email.blockReason(reason.trim())
+          : t.email.blockReasonPlain,
         "block",
       );
     }
@@ -205,8 +219,8 @@ export async function blockDates(
 
     return done(
       clashes.length
-        ? `Blocked, and ${clashes.length} ${clashes.length === 1 ? "stay was" : "stays were"} cancelled.`
-        : "Those nights are yours.",
+        ? t.ok.blockedAndCancelled(clashes.length)
+        : t.ok.nightsYours,
     );
   } catch (error) {
     return toState(error);
@@ -218,12 +232,13 @@ export async function removeBlock(
   form: FormData,
 ): Promise<ActionState> {
   try {
+    const t = await getDict();
     await actorHost();
     const id = str(form, "blockId");
     await db.delete(blocks).where(eq(blocks.id, id));
     revalidatePath("/host");
     revalidatePath("/stay");
-    return done("Those nights are open again.");
+    return done(t.ok.nightsOpen);
   } catch (error) {
     return toState(error);
   }
@@ -236,13 +251,14 @@ export async function decideMember(
   form: FormData,
 ): Promise<ActionState> {
   try {
+    const t = await getDict();
     const host = await actorHost();
     const userId = str(form, "userId");
     const decision = str(form, "decision");
-    if (userId === host.id) return fail("You can't moderate yourself.");
+    if (userId === host.id) return fail(t.errors.noSelfModerate);
 
     const [person] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
-    if (!person) return fail("That person no longer has an account.");
+    if (!person) return fail(t.errors.personGone);
 
     if (decision === "approve") {
       const [updated] = await db
@@ -252,10 +268,10 @@ export async function decideMember(
         .returning();
       await memberApproved(updated);
       revalidatePath("/host", "layout");
-      return done(`${updated.displayName ?? "They"} can book now.`);
+      return done(t.ok.canBookNow(updated.displayName ?? updated.name ?? ""));
     }
 
-    if (decision !== "deny") return fail("Unknown decision.");
+    if (decision !== "deny") return fail(t.errors.unknownDecision);
 
     const [updated] = await db
       .update(users)
@@ -277,7 +293,7 @@ export async function decideMember(
       );
 
     for (const { trip, guest } of live) {
-      await killTrip(trip, guest, "Your access to the booking page was removed.", "host");
+      await killTrip(trip, guest, t.email.accessRemoved, "host");
     }
 
     await memberDenied(updated);
@@ -285,8 +301,8 @@ export async function decideMember(
     revalidatePath("/stay");
     return done(
       live.length
-        ? `Access removed, and ${live.length} upcoming ${live.length === 1 ? "stay was" : "stays were"} cancelled.`
-        : "Access removed.",
+        ? t.ok.accessRemovedWithTrips(live.length)
+        : t.ok.accessRemoved,
     );
   } catch (error) {
     return toState(error);
@@ -300,6 +316,7 @@ export async function saveHostSettings(
   form: FormData,
 ): Promise<ActionState> {
   try {
+    const t = await getDict();
     await actorHost();
     const address = optionalStr(form, "address");
     const addressNote = optionalStr(form, "addressNote");
@@ -341,11 +358,7 @@ export async function saveHostSettings(
     revalidatePath("/host", "layout");
     revalidatePath("/stay");
     revalidatePath("/trips");
-    return done(
-      told
-        ? `Saved. ${told} ${told === 1 ? "guest" : "guests"} with an upcoming stay were emailed the new address.`
-        : "Saved.",
-    );
+    return done(told ? t.ok.addressEmailed(told) : t.ok.saved);
   } catch (error) {
     return toState(error);
   }
@@ -356,16 +369,17 @@ export async function chooseCalendar(
   form: FormData,
 ): Promise<ActionState> {
   try {
+    const t = await getDict();
     await actorHost();
     const calendarId = str(form, "calendarId");
-    if (!calendarId) return fail("Pick a calendar.");
+    if (!calendarId) return fail(t.errors.pickCalendar);
     const available = await listCalendars();
     const match = available.find((c) => c.id === calendarId);
-    if (!match) return fail("That calendar is no longer available on this account.");
+    if (!match) return fail(t.errors.calendarGone);
 
     await saveSettings({ calendarId: match.id, calendarName: match.name });
     revalidatePath("/host/settings");
-    return done(`New stays will land on "${match.name}".`);
+    return done(t.ok.calendarChosen(match.name));
   } catch (error) {
     return toState(error);
   }

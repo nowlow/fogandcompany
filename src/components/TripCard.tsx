@@ -1,14 +1,10 @@
 import type { ReactNode } from "react";
 import { StatusChip } from "./ui";
-import { formatRange, nightsLabel, relativeToToday, toUTC } from "@/lib/dates";
+import { formatRange, relativeToToday, toUTC } from "@/lib/dates";
 import type { Trip, User } from "@/lib/schema";
+import { getDict } from "@/lib/i18n";
 
-const MONTH = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  timeZone: "UTC",
-});
-
-export function TripCard({
+export async function TripCard({
   trip,
   guest,
   actions,
@@ -19,8 +15,18 @@ export function TripCard({
   actions?: ReactNode;
   dim?: boolean;
 }) {
+  const t = await getDict();
+  const month = new Intl.DateTimeFormat(t.intl, {
+    month: "short",
+    timeZone: "UTC",
+  });
+  const nights = Math.round(
+    (Date.parse(`${trip.endDate}T00:00:00Z`) -
+      Date.parse(`${trip.startDate}T00:00:00Z`)) /
+      86400000,
+  );
   const party = [
-    guest ? (guest.displayName ?? guest.name ?? "Guest") : "You",
+    guest ? (guest.displayName ?? guest.name ?? "—") : t.calendar.you,
     ...trip.companions.map((c) => c.name),
   ];
   const start = toUTC(trip.startDate);
@@ -35,25 +41,30 @@ export function TripCard({
         <span className="num text-[34px] leading-none tracking-tight">
           {start.getUTCDate()}
         </span>
-        <span className="eyebrow sm:mt-1">{MONTH.format(start)}</span>
+        <span className="eyebrow sm:mt-1">{month.format(start)}</span>
       </div>
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <h3 className="text-[1.25rem] leading-tight tight">
-            {formatRange(trip.startDate, trip.endDate)}
+            {formatRange(trip.startDate, trip.endDate, t.intl)}
           </h3>
-          <StatusChip status={trip.status} />
+          <StatusChip
+            status={trip.status}
+            label={
+              t.status[trip.status as keyof typeof t.status] ?? trip.status
+            }
+          />
         </div>
 
         <p className="num mt-1.5 text-[12.5px] tracking-wide text-ink-soft">
-          {nightsLabel(trip.startDate, trip.endDate)} ·{" "}
-          {relativeToToday(trip.startDate)}
+          {t.common.nights(nights)} ·{" "}
+          {relativeToToday(trip.startDate, t.intl)}
         </p>
 
         <p className="mt-2 text-[13.5px] text-ink-soft">
           <span className="text-ink">{party.join(", ")}</span>
-          {party.length > 1 ? ` · ${party.length} people` : ""}
+          {party.length > 1 ? ` · ${t.common.people(party.length)}` : ""}
         </p>
 
         {trip.note ? (

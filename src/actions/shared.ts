@@ -1,4 +1,5 @@
 import { ActionError } from "@/lib/errors";
+import { getDict } from "@/lib/i18n";
 import type { ActionState } from "./state";
 
 export type { ActionState };
@@ -13,13 +14,14 @@ export function done(message: string): ActionState {
 }
 
 /** Turns thrown errors into something safe to show a family member. */
-export function toState(error: unknown): ActionState {
+export async function toState(error: unknown): Promise<ActionState> {
+  const t = await getDict();
   if (error instanceof ActionError) return fail(error.message);
   if (error instanceof Error && error.name === "ZodError") {
-    return fail("Some of those details didn't look right. Have another go.");
+    return fail(t.common.checkDetails);
   }
   console.error("[action]", error);
-  return fail("Something went wrong on our side. Try again in a moment.");
+  return fail(t.common.somethingWrong);
 }
 
 export function str(form: FormData, key: string): string {

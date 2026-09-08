@@ -7,13 +7,15 @@ import { Eyebrow, SectionHeading, Empty } from "@/components/ui";
 import { tripsForUser } from "@/lib/availability";
 import { getSettings } from "@/lib/settings";
 import { today } from "@/lib/dates";
+import { getDict } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "My trips" };
+
 
 export default async function Trips() {
   const user = await requireGuest();
-  const [rows, settings] = await Promise.all([
+  const [t, rows, settings] = await Promise.all([
+    getDict(),
     tripsForUser(user.id),
     getSettings(),
   ]);
@@ -32,15 +34,15 @@ export default async function Trips() {
   return (
     <Shell user={user}>
       <h1 className="rise mb-8 text-[2.4rem] leading-none tight">
-        Trips<em className="wonky not-italic text-orange">.</em>
+        {t.trips.title}<em className="wonky not-italic text-orange">.</em>
       </h1>
 
       <section>
         <SectionHeading
-          title="Coming up"
+          title={t.trips.comingUp}
           action={
             <Link href="/stay" className="btn-quiet">
-              Book another →
+              {t.trips.bookAnother}
             </Link>
           }
         />
@@ -55,7 +57,11 @@ export default async function Trips() {
                     {trip.status === "pending" ? <EditTrip tripId={trip.id} /> : null}
                     <CancelTrip
                       tripId={trip.id}
-                      label={trip.status === "pending" ? "Withdraw" : "Cancel"}
+                      label={
+                        trip.status === "pending"
+                          ? t.trips.withdraw
+                          : t.trips.cancel
+                      }
                     />
                   </>
                 }
@@ -64,16 +70,16 @@ export default async function Trips() {
           </div>
         ) : (
           <Empty>
-            Nothing planned.{" "}
+            {t.trips.nothingPlanned}{" "}
             <Link href="/stay" className="underline underline-offset-4">
-              Pick some nights
+              {t.trips.pickSomeNights}
             </Link>
             .
           </Empty>
         )}
         {live.some((t) => t.status === "approved") && settings.address ? (
           <p className="mt-4 text-[13px] leading-relaxed text-ink-soft">
-            <span className="eyebrow">Address</span>{" "}
+            <span className="eyebrow">{t.trips.address}</span>{" "}
             <span className="whitespace-pre-line">{settings.address}</span>
           </p>
         ) : null}
@@ -81,7 +87,7 @@ export default async function Trips() {
 
       {past.length ? (
         <section className="mt-16">
-          <SectionHeading title="Been and gone" />
+          <SectionHeading title={t.trips.beenAndGone} />
           <div className="grid gap-4">
             {past.map((trip) => (
               <TripCard key={trip.id} trip={trip} dim />
@@ -92,7 +98,7 @@ export default async function Trips() {
 
       {closed.length ? (
         <section className="mt-16">
-          <SectionHeading title="Cancelled and declined" />
+          <SectionHeading title={t.trips.closed} />
           <div className="grid gap-4">
             {closed.map((trip) => (
               <TripCard key={trip.id} trip={trip} dim />

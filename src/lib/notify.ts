@@ -1,31 +1,46 @@
 import { hostMail, sendMail, type Fact } from "./email";
 import { appUrl, CITY, APP_NAME } from "./constants";
-import { formatRange, nightsLabel, formatFull } from "./dates";
+import { formatRange, nightsBetween, formatFull } from "./dates";
+import { dictFor, getDict, type Dict } from "./i18n";
 import type { Settings, Trip, User } from "./schema";
 
 const guestUrl = appUrl("/trips");
 const hostUrl = appUrl("/host");
 
-function party(trip: Trip, guest: User): string {
+/** Whatever language this person reads. */
+const forGuest = (guest: User): Dict => dictFor(guest.locale);
+
+function nights(trip: Trip, t: Dict): string {
+  return t.common.nights(nightsBetween(trip.startDate, trip.endDate));
+}
+
+function party(trip: Trip, guest: User, t: Dict): string {
   const names = [
-    guest.displayName ?? guest.name ?? guest.email ?? "Guest",
+    guest.displayName ?? guest.name ?? guest.email ?? "—",
     ...trip.companions.map((c) => c.name),
   ];
   return names.length > 1
-    ? `${names.join(", ")} (${names.length} people)`
+    ? `${names.join(", ")} (${t.common.people(names.length)})`
     : names[0];
 }
 
-function tripFacts(trip: Trip, guest: User): Fact[] {
+function tripFacts(trip: Trip, guest: User, t: Dict): Fact[] {
   const facts: Fact[] = [
-    { label: "Dates", value: formatRange(trip.startDate, trip.endDate) },
     {
-      label: "Length",
-      value: `${nightsLabel(trip.startDate, trip.endDate)} — arriving ${formatFull(trip.startDate)}, leaving ${formatFull(trip.endDate)}`,
+      label: t.email.dates,
+      value: formatRange(trip.startDate, trip.endDate, t.intl),
     },
-    { label: "Who", value: party(trip, guest) },
+    {
+      label: t.email.length,
+      value: t.email.lengthValue(
+        nights(trip, t),
+        formatFull(trip.startDate, t.intl),
+        formatFull(trip.endDate, t.intl),
+      ),
+    },
+    { label: t.email.who, value: party(trip, guest, t) },
   ];
-  if (trip.note) facts.push({ label: "Note", value: trip.note });
+  if (trip.note) facts.push({ label: t.email.note, value: trip.note });
   return facts;
 }
 
@@ -36,84 +51,105 @@ function partyEmails(trip: Trip, guest: User): string[] {
   );
 }
 
+const footer = (t: Dict) => t.email.footer(APP_NAME, CITY);
+const named = (u: User) => u.displayName ?? u.name ?? u.email ?? "—";
+
 /* ------------------------------ membership ------------------------------- */
 
-export function hostNewMember(user: User) {
+export async function hostNewMember(user: User) {
+  const t = await getDict();
   return hostMail({
-    subject: `${user.displayName ?? user.name ?? "Someone"} wants to visit`,
-    heading: "Someone new knocked",
-    intro: `${user.displayName ?? user.name} asked to join your ${CITY} page. Nobody can see the calendar until you let them in.`,
+    subject: t.email.newMemberSubject(named(user)),
+    heading: t.email.newMemberHeading,
+    intro: t.email.newMemberIntro(named(user), CITY),
     facts: [
-      { label: "Name", value: user.displayName ?? user.name ?? "—" },
-      { label: "Signed in as", value: user.email ?? "—" },
+      { label: t.email.name, value: named(user) },
+      { label: t.email.signedInAs, value: user.email ?? "—" },
       ...(user.relationship
-        ? [{ label: "Says they are", value: user.relationship }]
+        ? [{ label: t.email.saysTheyAre, value: user.relationship }]
         : []),
     ],
-    cta: { label: "Review the request", url: appUrl("/host/people") },
+    cta: { label: t.email.reviewRequest, url: appUrl("/host/people") },
     replyTo: user.email ?? undefined,
+    footer: footer(t),
   });
 }
 
 export function memberApproved(user: User) {
+  const t = forGuest(user);
   return sendMail({
     to: user.email ?? "",
-    subject: `You're in — come visit ${CITY}`,
-    heading: "You're in",
-    intro: `Your account is approved. Pick the dates that suit you and send a request.`,
-    paragraphs: [
-      "Dates that are already taken are greyed out on the calendar. You can bring up to two other people and leave a note with anything worth knowing.",
-    ],
+    subject: t.email.approvedSubject(CITY),
+    heading: t.email.approvedHeading,
+    intro: t.email.approvedIntro,
+    paragraphs: [t.email.approvedBody],
     tone: "good",
-    cta: { label: "Choose your dates", url: appUrl("/stay") },
+    cta: { label: t.email.chooseDates, url: appUrl("/stay") },
+    footer: footer(t),
   });
 }
 
 export function memberDenied(user: User) {
+  const t = forGuest(user);
   return sendMail({
     to: user.email ?? "",
-    subject: `About your request to ${APP_NAME}`,
-    heading: "Not this time",
-    intro: "Your request to join was declined. If you think that is a mistake, reply to this email.",
+    subject: t.email.deniedSubject(APP_NAME),
+    heading: t.email.deniedHeading,
+    intro: t.email.deniedIntro,
+    footer: footer(t),
   });
 }
 
 /* -------------------------------- requests ------------------------------- */
 
-export function hostTripRequested(trip: Trip, guest: User) {
+export async function hostTripRequested(trip: Trip, guest: User) {
+  const t = await getDict();
   return hostMail({
-    subject: `${guest.displayName ?? guest.name} wants ${formatRange(trip.startDate, trip.endDate)}`,
-    heading: "New stay request",
-    intro: `${guest.displayName ?? guest.name} asked for ${nightsLabel(trip.startDate, trip.endDate)}.`,
-    facts: tripFacts(trip, guest),
-    cta: { label: "Accept or decline", url: hostUrl },
+    subject: t.email.requestedSubject(
+      named(guest),
+      formatRange(trip.startDate, trip.endDate, t.intl),
+    ),
+    heading: t.email.requestedHeading,
+    intro: t.email.requestedIntro(named(guest), nights(trip, t)),
+    facts: tripFacts(trip, guest, t),
+    cta: { label: t.email.acceptOrDecline, url: hostUrl },
     replyTo: guest.email ?? undefined,
+    footer: footer(t),
   });
 }
 
 export function guestTripReceived(trip: Trip, guest: User) {
+  const t = forGuest(guest);
   return sendMail({
     to: guest.email ?? "",
-    subject: `Request sent — ${formatRange(trip.startDate, trip.endDate)}`,
-    heading: "Request sent",
-    intro: "Your dates are held while the host has a look. You'll get an email either way.",
-    facts: tripFacts(trip, guest),
-    cta: { label: "See your trips", url: guestUrl },
+    subject: t.email.receivedSubject(
+      formatRange(trip.startDate, trip.endDate, t.intl),
+    ),
+    heading: t.email.receivedHeading,
+    intro: t.email.receivedIntro,
+    facts: tripFacts(trip, guest, t),
+    cta: { label: t.email.seeYourTrips, url: guestUrl },
+    footer: footer(t),
   });
 }
 
-export function hostTripUpdated(trip: Trip, guest: User, previous: Trip) {
-  const changedDates =
+export async function hostTripUpdated(trip: Trip, guest: User, previous: Trip) {
+  const t = await getDict();
+  const movedDates =
     previous.startDate !== trip.startDate || previous.endDate !== trip.endDate;
   return hostMail({
-    subject: `${guest.displayName ?? guest.name} changed their request`,
-    heading: "A request was edited",
-    intro: changedDates
-      ? `Moved from ${formatRange(previous.startDate, previous.endDate)} to ${formatRange(trip.startDate, trip.endDate)}.`
-      : "The details changed, the dates did not.",
-    facts: tripFacts(trip, guest),
-    cta: { label: "Review it", url: hostUrl },
+    subject: t.email.updatedSubject(named(guest)),
+    heading: t.email.updatedHeading,
+    intro: movedDates
+      ? t.email.updatedMoved(
+          formatRange(previous.startDate, previous.endDate, t.intl),
+          formatRange(trip.startDate, trip.endDate, t.intl),
+        )
+      : t.email.updatedSame,
+    facts: tripFacts(trip, guest, t),
+    cta: { label: t.email.reviewIt, url: hostUrl },
     replyTo: guest.email ?? undefined,
+    footer: footer(t),
   });
 }
 
@@ -123,54 +159,75 @@ export function guestTripApproved(
   settings: Settings,
   calendarSynced: boolean,
 ) {
-  const facts = tripFacts(trip, guest);
+  const t = forGuest(guest);
+  const facts = tripFacts(trip, guest, t);
   if (settings.address)
-    facts.push({ label: "Where", value: settings.address });
+    facts.push({ label: t.email.where, value: settings.address });
   if (settings.addressNote)
-    facts.push({ label: "Getting in", value: settings.addressNote });
+    facts.push({ label: t.email.gettingIn, value: settings.addressNote });
 
   return sendMail({
     to: partyEmails(trip, guest),
-    subject: `Confirmed — ${formatRange(trip.startDate, trip.endDate)} in ${CITY}`,
-    heading: "You're booked",
-    intro: `See you on ${formatFull(trip.startDate)}.`,
+    subject: t.email.confirmedSubject(
+      formatRange(trip.startDate, trip.endDate, t.intl),
+      CITY,
+    ),
+    heading: t.email.confirmedHeading,
+    intro: t.email.confirmedIntro(formatFull(trip.startDate, t.intl)),
     facts,
-    paragraphs: calendarSynced
-      ? ["A calendar invitation is on its way to everyone on the reservation."]
-      : [],
+    paragraphs: calendarSynced ? [t.email.confirmedCalendar] : [],
     tone: "good",
-    cta: { label: "See your trip", url: guestUrl },
+    cta: { label: t.email.seeYourTrip, url: guestUrl },
+    footer: footer(t),
   });
 }
 
 export function guestTripDenied(trip: Trip, guest: User, reason?: string | null) {
+  const t = forGuest(guest);
   return sendMail({
     to: guest.email ?? "",
-    subject: `About ${formatRange(trip.startDate, trip.endDate)}`,
-    heading: "Those dates won't work",
-    intro: reason?.trim()
-      ? reason.trim()
-      : "The host can't host those particular dates. Other dates on the calendar are still open.",
+    subject: t.email.declinedSubject(
+      formatRange(trip.startDate, trip.endDate, t.intl),
+    ),
+    heading: t.email.declinedHeading,
+    intro: reason?.trim() ? reason.trim() : t.email.declinedIntro,
     facts: [
-      { label: "Dates", value: formatRange(trip.startDate, trip.endDate) },
+      {
+        label: t.email.dates,
+        value: formatRange(trip.startDate, trip.endDate, t.intl),
+      },
     ],
-    cta: { label: "Try other dates", url: appUrl("/stay") },
+    cta: { label: t.email.tryOther, url: appUrl("/stay") },
+    footer: footer(t),
   });
 }
 
-export function hostTripCancelled(trip: Trip, guest: User, reason?: string | null) {
+export async function hostTripCancelled(
+  trip: Trip,
+  guest: User,
+  reason?: string | null,
+) {
+  const t = await getDict();
   const wasConfirmed = Boolean(trip.calendarEventId);
   return hostMail({
-    subject: `${guest.displayName ?? guest.name} cancelled ${formatRange(trip.startDate, trip.endDate)}`,
-    heading: wasConfirmed ? "A confirmed stay was cancelled" : "A request was withdrawn",
-    intro: `${guest.displayName ?? guest.name} cancelled. Those nights are open again.`,
+    subject: t.email.cancelledSubject(
+      named(guest),
+      formatRange(trip.startDate, trip.endDate, t.intl),
+    ),
+    heading: wasConfirmed
+      ? t.email.cancelledHeadingConfirmed
+      : t.email.cancelledHeadingRequest,
+    intro: t.email.cancelledIntro(named(guest)),
     facts: [
-      ...tripFacts(trip, guest),
-      ...(reason?.trim() ? [{ label: "Reason", value: reason.trim() }] : []),
+      ...tripFacts(trip, guest, t),
+      ...(reason?.trim()
+        ? [{ label: t.email.reason, value: reason.trim() }]
+        : []),
     ],
     tone: "warn",
-    cta: { label: "Open the calendar", url: hostUrl },
+    cta: { label: t.email.openCalendar, url: hostUrl },
     replyTo: guest.email ?? undefined,
+    footer: footer(t),
   });
 }
 
@@ -179,22 +236,25 @@ export function guestTripCancelledByHost(
   guest: User,
   reason?: string | null,
 ) {
+  const t = forGuest(guest);
   return sendMail({
     to: partyEmails(trip, guest),
-    subject: `Cancelled — ${formatRange(trip.startDate, trip.endDate)}`,
-    heading: "Your stay was cancelled",
-    intro: reason?.trim()
-      ? reason.trim()
-      : "Something came up on the host's side and these dates are no longer available.",
+    subject: t.email.byHostSubject(
+      formatRange(trip.startDate, trip.endDate, t.intl),
+    ),
+    heading: t.email.byHostHeading,
+    intro: reason?.trim() ? reason.trim() : t.email.byHostIntro,
     facts: [
-      { label: "Dates", value: formatRange(trip.startDate, trip.endDate) },
-      { label: "Who", value: party(trip, guest) },
+      {
+        label: t.email.dates,
+        value: formatRange(trip.startDate, trip.endDate, t.intl),
+      },
+      { label: t.email.who, value: party(trip, guest, t) },
     ],
-    paragraphs: [
-      "Any calendar invitation for these dates has been removed. The rest of the calendar is still open, so pick another window whenever you like.",
-    ],
+    paragraphs: [t.email.byHostBody],
     tone: "warn",
-    cta: { label: "Pick new dates", url: appUrl("/stay") },
+    cta: { label: t.email.pickNew, url: appUrl("/stay") },
+    footer: footer(t),
   });
 }
 
@@ -205,17 +265,21 @@ export function guestAddressChanged(
   guest: User,
   settings: Settings,
 ) {
+  const t = forGuest(guest);
   return sendMail({
     to: partyEmails(trip, guest),
-    subject: `New address for your ${CITY} stay`,
-    heading: "The address changed",
-    intro: `Where to go for ${formatRange(trip.startDate, trip.endDate)}:`,
+    subject: t.email.addressSubject(CITY),
+    heading: t.email.addressHeading,
+    intro: t.email.addressIntro(
+      formatRange(trip.startDate, trip.endDate, t.intl),
+    ),
     facts: [
-      { label: "Address", value: settings.address ?? "—" },
+      { label: t.email.address, value: settings.address ?? "—" },
       ...(settings.addressNote
-        ? [{ label: "Getting in", value: settings.addressNote }]
+        ? [{ label: t.email.gettingIn, value: settings.addressNote }]
         : []),
     ],
-    cta: { label: "See your trip", url: guestUrl },
+    cta: { label: t.email.seeYourTrip, url: guestUrl },
+    footer: footer(t),
   });
 }

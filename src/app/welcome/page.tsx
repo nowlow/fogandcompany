@@ -4,12 +4,13 @@ import { WelcomeForm } from "@/components/WelcomeForm";
 import { Mark, Eyebrow } from "@/components/ui";
 import { endSession } from "@/actions/auth";
 import { APP_NAME, CITY } from "@/lib/constants";
+import { getDict } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Say hello" };
+
 
 export default async function Welcome() {
-  const user = await requireUser();
+  const [user, t] = await Promise.all([requireUser(), getDict()]);
   if (user.displayName && user.status === "approved") redirect("/stay");
 
   return (
@@ -22,15 +23,14 @@ export default async function Welcome() {
           </span>
         </span>
 
-        <Eyebrow className="mt-10">Step one of two</Eyebrow>
+        <Eyebrow className="mt-10">{t.welcome.step}</Eyebrow>
         <h1 className="mt-3 text-display leading-[0.95] tight">
-          What should we
+          {t.welcome.title1}
           <br />
-          <em className="wonky not-italic text-orange">call you?</em>
+          <em className="wonky not-italic text-orange">{t.welcome.title2}</em>
         </h1>
         <p className="mt-5 max-w-[40ch] leading-relaxed text-ink-soft">
-          This is the name the host sees next to your dates, and the one that
-          goes on the calendar when you come to {CITY}.
+          {t.welcome.lede(CITY)}
         </p>
 
         <WelcomeForm
@@ -40,10 +40,10 @@ export default async function Welcome() {
         />
 
         <div className="mt-10 flex items-center justify-between border-t border-rule pt-4 text-xs text-ink-faint">
-          <span>Signed in as {user.email}</span>
+          <span>{t.welcome.signedInAs(user.email ?? "")}</span>
           <form action={endSession}>
             <button type="submit" className="btn-quiet">
-              Not you?
+              {t.welcome.notYou}
             </button>
           </form>
         </div>

@@ -6,16 +6,18 @@ import { cancelTrip } from "@/actions/trips";
 import { decideTrip } from "@/actions/host";
 import { idle } from "@/actions/state";
 import { SubmitButton, Notice } from "./form";
+import { useT } from "./I18n";
 
 export function CancelTrip({
   tripId,
   asHost,
-  label = "Cancel",
+  label,
 }: {
   tripId: string;
   asHost?: boolean;
   label?: string;
 }) {
+  const t = useT();
   const [state, formAction] = useActionState(cancelTrip, idle);
   const [open, setOpen] = useState(false);
 
@@ -30,7 +32,7 @@ export function CancelTrip({
         onClick={() => setOpen(true)}
         className="btn btn-ghost w-full"
       >
-        {label}
+        {label ?? t.trips.cancel}
       </button>
     );
   }
@@ -39,26 +41,24 @@ export function CancelTrip({
     <form action={formAction} className="w-full sm:w-[230px]">
       <input type="hidden" name="tripId" value={tripId} />
       <p className="text-[13px] leading-snug text-ink">
-        {asHost
-          ? "Cancel this stay and email the guest?"
-          : "Cancel this stay? The host will be told."}
+        {asHost ? t.trips.confirmHost : t.trips.confirmGuest}
       </p>
       <input
         name="reason"
         maxLength={300}
-        placeholder={asHost ? "Why (optional)" : "A word of explanation (optional)"}
+        placeholder={asHost ? t.trips.reasonHost : t.trips.reasonGuest}
         className="field mt-2 text-[13px]"
       />
       <div className="mt-3 flex gap-2">
-        <SubmitButton pendingLabel="Cancelling…" className="btn flex-1 !py-2">
-          Yes, cancel
+        <SubmitButton pendingLabel={t.trips.cancelling} className="btn flex-1 !py-2">
+          {t.trips.yesCancel}
         </SubmitButton>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="btn btn-ghost !py-2"
         >
-          Keep it
+          {t.trips.keepIt}
         </button>
       </div>
       <Notice state={state} />
@@ -67,14 +67,16 @@ export function CancelTrip({
 }
 
 export function EditTrip({ tripId }: { tripId: string }) {
+  const t = useT();
   return (
     <Link href={`/stay?edit=${tripId}`} className="btn btn-ghost w-full">
-      Change dates
+      {t.trips.changeDates}
     </Link>
   );
 }
 
 export function DecideTrip({ tripId }: { tripId: string }) {
+  const t = useT();
   const [state, formAction] = useActionState(decideTrip, idle);
   const [declining, setDeclining] = useState(false);
 
@@ -92,24 +94,24 @@ export function DecideTrip({ tripId }: { tripId: string }) {
             name="reason"
             maxLength={300}
             autoFocus
-            placeholder="Tell them why (optional)"
+            placeholder={t.host.declineReason}
             className="field mb-3 text-[13px]"
           />
           <div className="flex gap-2">
             <SubmitButton
               name="decision"
               value="deny"
-              pendingLabel="Sending…"
+              pendingLabel={t.common.sending}
               className="btn flex-1 !py-2"
             >
-              Send decline
+              {t.host.sendDecline}
             </SubmitButton>
             <button
               type="button"
               onClick={() => setDeclining(false)}
               className="btn btn-ghost !py-2"
             >
-              Back
+              {t.common.back}
             </button>
           </div>
         </>
@@ -118,17 +120,17 @@ export function DecideTrip({ tripId }: { tripId: string }) {
           <SubmitButton
             name="decision"
             value="approve"
-            pendingLabel="Confirming…"
+            pendingLabel={t.host.confirming}
             className="btn flex-1"
           >
-            Accept
+            {t.host.accept}
           </SubmitButton>
           <button
             type="button"
             onClick={() => setDeclining(true)}
             className="btn btn-ghost flex-1"
           >
-            Decline
+            {t.host.decline}
           </button>
         </div>
       )}

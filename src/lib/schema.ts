@@ -31,6 +31,8 @@ export const users = pgTable("user", {
   // the name the host sees / what goes on the calendar
   displayName: text("displayName"),
   relationship: text("relationship"),
+  /** Which language to write this person's emails in. */
+  locale: text("locale"),
   createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
   decidedAt: timestamp("decidedAt", { mode: "date" }),
 });

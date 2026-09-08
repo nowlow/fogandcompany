@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
+import { getLocale, getDict } from "@/lib/i18n";
+import { I18nProvider } from "@/components/I18n";
 import { Fraunces, Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
-import { APP_NAME, CITY } from "@/lib/constants";
+import { APP_NAME } from "@/lib/constants";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -23,28 +25,34 @@ const plexMono = IBM_Plex_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: `${APP_NAME} — come stay in ${CITY}`,
-    template: `%s · ${APP_NAME}`,
-  },
-  description: `A private guest book: pick your dates, and come stay in ${CITY}.`,
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getDict();
+  return {
+    title: {
+      default: `${APP_NAME} — ${t.landing.title1} ${t.landing.title2}`,
+      template: `%s · ${APP_NAME}`,
+    },
+    description: t.landing.aboutBody(APP_NAME).slice(0, 160),
+    robots: { index: false, follow: false },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#f2ece0",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getLocale();
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`${fraunces.variable} ${instrument.variable} ${plexMono.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <I18nProvider locale={locale}>{children}</I18nProvider>
+      </body>
     </html>
   );
 }

@@ -9,17 +9,10 @@ import { disconnectCalendar } from "@/actions/host";
 import { frontDeskCount } from "@/lib/counts";
 import { enabledProviders } from "@/lib/auth";
 import { HOST_EMAIL } from "@/lib/constants";
+import { getDict } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Settings" };
 
-const CALENDAR_MESSAGES: Record<string, string> = {
-  connected: "Google Calendar is connected.",
-  denied: "Google didn't grant access — nothing changed.",
-  state: "That link expired. Try connecting again.",
-  failed: "The connection failed. Check the server logs and try again.",
-  "missing-client": "Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET first.",
-};
 
 export default async function HostSettings({
   searchParams,
@@ -29,7 +22,8 @@ export default async function HostSettings({
   const host = await requireHost();
   const { calendar: flash } = await searchParams;
 
-  const [settings, connected, deskCount] = await Promise.all([
+  const [t, settings, connected, deskCount] = await Promise.all([
+    getDict(),
     getSettings(),
     calendarConnected(),
     frontDeskCount(),
@@ -39,12 +33,12 @@ export default async function HostSettings({
   return (
     <Shell user={host} pendingCount={deskCount}>
       <h1 className="rise mb-8 text-[2.4rem] leading-none tight">
-        Settings<em className="wonky not-italic text-orange">.</em>
+        {t.settings.title}<em className="wonky not-italic text-orange">.</em>
       </h1>
 
       <div className="grid gap-14 lg:grid-cols-[minmax(0,1fr)_360px]">
         <section>
-          <SectionHeading label="Where to come" title="Your address" />
+          <SectionHeading title={t.settings.addressSection} />
           <AddressForm
             address={settings.address ?? ""}
             addressNote={settings.addressNote ?? ""}
@@ -54,7 +48,7 @@ export default async function HostSettings({
 
         <div className="space-y-12">
           <section>
-            <SectionHeading label="Invitations" title="Google Calendar" />
+            <SectionHeading title={t.settings.calendarSection} />
 
             {flash ? (
               <p
@@ -64,19 +58,18 @@ export default async function HostSettings({
                     : "border-orange text-orange-deep"
                 }`}
               >
-                {CALENDAR_MESSAGES[flash] ?? "Something went sideways."}
+                {t.settings.calendarFlash[flash] ?? t.common.somethingWrong}
               </p>
             ) : null}
 
             {connected ? (
               <div className="space-y-5">
                 <p className="text-[13.5px] leading-relaxed text-ink-soft">
-                  Connected as{" "}
+                  {t.settings.connectedAs}{" "}
                   <span className="text-ink">
-                    {settings.googleAccountEmail ?? "your Google account"}
+                    {settings.googleAccountEmail ?? "Google"}
                   </span>
-                  . Accepting a stay creates an event and invites everyone on it;
-                  cancelling deletes it.
+                  . {t.settings.connectedBody}
                 </p>
 
                 <CalendarPicker
@@ -86,19 +79,18 @@ export default async function HostSettings({
 
                 <form action={disconnectCalendar}>
                   <button type="submit" className="btn-quiet">
-                    Disconnect
+                    {t.settings.disconnect}
                   </button>
                 </form>
               </div>
             ) : (
               <div className="space-y-4">
                 <p className="text-[13.5px] leading-relaxed text-ink-soft">
-                  Connect a Google account so accepted stays appear on your
-                  calendar and everyone gets an invitation.
+                  {t.settings.connectBody}
                 </p>
                 {googleClient() ? (
                   <a href="/api/google/connect" className="btn inline-flex">
-                    Connect Google Calendar
+                    {t.settings.connect}
                   </a>
                 ) : (
                   <p className="border-l-2 border-orange py-2 pl-3 text-[13px] text-orange-deep">
@@ -111,19 +103,19 @@ export default async function HostSettings({
           </section>
 
           <section>
-            <SectionHeading label="Wiring" title="What's switched on" />
+            <SectionHeading title={t.settings.wiring} />
             <dl className="divide-y divide-rule border-y border-rule">
               <Row
-                label="Sign-in"
+                label={t.settings.signIn}
                 value={
                   enabledProviders.length
                     ? enabledProviders.map((p) => p.name).join(" · ")
-                    : "None configured"
+                    : t.settings.noneConfigured
                 }
                 ok={enabledProviders.length > 0}
               />
               <Row
-                label="Email"
+                label={t.settings.email}
                 value={
                   process.env.RESEND_API_KEY?.trim()
                     ? (process.env.EMAIL_FROM?.trim() ?? "onboarding@resend.dev")
@@ -132,21 +124,20 @@ export default async function HostSettings({
                 ok={Boolean(process.env.RESEND_API_KEY)}
               />
               <Row
-                label="Calendar"
+                label={t.settings.calendar}
                 value={
                   connected
-                    ? (settings.calendarName ?? "Primary calendar")
-                    : "Not connected"
+                    ? (settings.calendarName ?? t.settings.primaryCalendar)
+                    : t.settings.notConnected
                 }
                 ok={connected}
               />
-              <Row label="Host account" value={HOST_EMAIL} ok />
+              <Row label={t.settings.hostAccount} value={HOST_EMAIL} ok />
             </dl>
             <p className="mt-4 text-[12px] leading-relaxed text-ink-faint">
-              Alerts about requests, cancellations and new people go to{" "}
-              {HOST_EMAIL}.{" "}
+              {t.settings.alertsGoTo(HOST_EMAIL)}{" "}
               <Link href="/host" className="underline underline-offset-4">
-                Back to the front desk
+                {t.settings.backToDesk}
               </Link>
               .
             </p>

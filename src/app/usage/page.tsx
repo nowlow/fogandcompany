@@ -1,9 +1,10 @@
 import { LegalPage, Clause } from "@/components/Legal";
 import { APP_NAME, CITY, HOST_EMAIL, MAX_COMPANIONS, MAX_NIGHTS } from "@/lib/constants";
+import { getDict } from "@/lib/i18n";
 
-export const metadata = { title: "House rules" };
-
-export default function Usage() {
+export default async function Usage() {
+  const t = await getDict();
+  if (t.locale === "fr") return <UsageFr />;
   return (
     <LegalPage title="House rules" updated="8 September 2026">
       <Clause heading="Invitation only">
@@ -73,6 +74,87 @@ export default function Usage() {
       <Clause heading="Questions">
         <p>
           Write to <a href={`mailto:${HOST_EMAIL}`}>{HOST_EMAIL}</a>.
+        </p>
+      </Clause>
+    </LegalPage>
+  );
+}
+
+async function UsageFr() {
+  return (
+    <LegalPage title="Règles de la maison" updated="8 septembre 2026">
+      <Clause heading="Sur invitation seulement">
+        <p>
+          {APP_NAME} est une page privée pour les amis et la famille de
+          l&rsquo;hôte. Se connecter ne suffit pas à entrer : l&rsquo;hôte doit
+          t&rsquo;ouvrir, et peut refuser sans donner de raison.
+          L&rsquo;accès est personnel — ne passe ton compte à personne.
+        </p>
+      </Clause>
+
+      <Clause heading="Une réservation est une demande">
+        <p>
+          Choisir des dates, c&rsquo;est les demander à l&rsquo;hôte. Rien
+          n&rsquo;est acquis tant que tu n&rsquo;as pas reçu l&rsquo;e-mail de
+          confirmation. D&rsquo;ici là, les billets d&rsquo;avion ou de train
+          sont à tes risques.
+        </p>
+      </Clause>
+
+      <Clause heading="L'hôte a le dernier mot">
+        <p>
+          L&rsquo;hôte peut refuser une demande, annuler un séjour confirmé,
+          garder des dates pour lui ou retirer l&rsquo;accès à quelqu&rsquo;un, à
+          tout moment. Si des dates sont bloquées par-dessus un séjour déjà
+          confirmé, ce séjour est annulé et toutes les personnes concernées
+          reçoivent un e-mail.
+        </p>
+        <p>
+          C&rsquo;est la chambre d&rsquo;amis de quelqu&rsquo;un à {CITY}, pas un
+          hôtel. Il n&rsquo;y a pas de remboursement, parce qu&rsquo;il n&rsquo;y
+          a pas de paiement.
+        </p>
+      </Clause>
+
+      <Clause heading="Sois honnête sur qui vient">
+        <p>
+          Tu peux amener jusqu&rsquo;à {MAX_COMPANIONS} personnes, et tu devrais
+          les nommer au moment de réserver. Les séjours vont jusqu&rsquo;à{" "}
+          {MAX_NIGHTS} nuits ; au-delà, parles-en directement à l&rsquo;hôte.
+          Arriver avec plus de monde que prévu est le moyen le plus rapide de
+          perdre la chambre.
+        </p>
+      </Clause>
+
+      <Clause heading="Les dates des autres">
+        <p>
+          Tu vois quelles nuits sont prises et à peu près par qui, pour que tout
+          le monde puisse s&rsquo;organiser. Ne t&rsquo;en sers pas pour deviner
+          quand le logement de quelqu&rsquo;un est vide, et ne le partage pas
+          en dehors des gens de cette page.
+        </p>
+      </Clause>
+
+      <Clause heading="Annule tôt">
+        <p>
+          Si tes plans changent, annule depuis ta page de séjours plutôt que de
+          disparaître. Ça libère les nuits pour quelqu&rsquo;un d&rsquo;autre et
+          l&rsquo;hôte est prévenu tout de suite.
+        </p>
+      </Clause>
+
+      <Clause heading="Aucune promesse sur le logiciel">
+        <p>
+          C&rsquo;est un projet personnel, fourni tel quel. Il peut tomber en
+          panne, perdre un e-mail, ou être éteint complètement. Ne compte pas
+          dessus pour quoi que ce soit de plus important qu&rsquo;un lit pour le
+          week-end.
+        </p>
+      </Clause>
+
+      <Clause heading="Questions">
+        <p>
+          Écris à <a href={`mailto:${HOST_EMAIL}`}>{HOST_EMAIL}</a>.
         </p>
       </Clause>
     </LegalPage>

@@ -1,0 +1,435 @@
+import type { Dict } from "./en";
+
+export const fr: Dict = {
+  locale: "fr",
+  intl: "fr-FR",
+  name: "Français",
+
+  common: {
+    save: "Enregistrer",
+    cancel: "Annuler",
+    saving: "Enregistrement…",
+    sending: "Envoi…",
+    working: "Un instant…",
+    back: "Retour",
+    startOver: "Recommencer",
+    optional: "facultatif",
+    nights: (n: number) => `${n} nuit${n === 1 ? "" : "s"}`,
+    people: (n: number) => `${n} personne${n === 1 ? "" : "s"}`,
+    privacy: "Confidentialité",
+    houseRules: "Règles de la maison",
+    signOut: "Se déconnecter",
+    somethingWrong: "Quelque chose a coincé de notre côté. Réessaie dans un instant.",
+    checkDetails: "Certaines informations n'ont pas l'air correctes. Réessaie.",
+  },
+
+  status: {
+    approved: "Confirmé",
+    pending: "En attente",
+    denied: "Refusé",
+    cancelled: "Annulé",
+    blocked: "Gardé par l'hôte",
+  },
+
+  landing: {
+    title1: "Viens passer",
+    title2: "quelques jours.",
+    continueWith: (provider: string) => `Continuer avec ${provider}`,
+    noProvider:
+      "Aucun fournisseur de connexion n'est configuré. Ajoute les identifiants Google ou GitHub à l'environnement et redéploie.",
+    aboutHeading: "Ce que c'est",
+    aboutBody: (app: string) =>
+      `${app} est une page de réservation privée, réservée aux amis et à la famille d'une seule personne. On se connecte, on demande à entrer, et une fois accepté on voit quelles nuits sont libres, on demande un séjour, on peut amener jusqu'à deux personnes et laisser un mot. L'hôte accepte ou refuse chaque demande, et garde des dates pour lui quand il a besoin de la chambre.`,
+    whyGoogleHeading: "Pourquoi un compte Google.",
+    whyGoogleBody:
+      "Se connecter avec Google indique au site qui tu es — ton nom et ton adresse e-mail — pour que l'hôte sache à qui appartient chaque réservation. C'est le seul usage qui en est fait.",
+    whyCalendarHeading: "Pourquoi l'accès à Google Agenda.",
+    whyCalendarBody:
+      "Seul l'hôte se le voit demander, et uniquement pour inscrire les séjours confirmés dans l'agenda de son choix et envoyer une invitation à toutes les personnes concernées. Annuler un séjour supprime l'événement. L'application ne lit ni ne modifie rien d'autre dans l'agenda, et cet accès n'est jamais demandé aux invités.",
+    aboutTail:
+      "Rien n'est vendu, exploité à des fins publicitaires ni partagé au-delà des services nécessaires au fonctionnement du site. Le détail complet se trouve dans la",
+    aboutAnd: "et les",
+  },
+
+  welcome: {
+    step: "Étape 1 sur 2",
+    title1: "Comment on",
+    title2: "t'appelle ?",
+    lede: (city: string) =>
+      `C'est le nom que l'hôte verra à côté de tes dates, et celui qui apparaîtra dans l'agenda quand tu viendras à ${city}.`,
+    nameLabel: "Ton nom",
+    namePlaceholder: "Camille Durand",
+    relationLabel: "Comment connais-tu l'hôte ?",
+    relationHint: "Facultatif, mais ça l'aide à te situer.",
+    relationPlaceholder: "Cousine de Lyon",
+    submit: "Demander à entrer",
+    signedInAs: (email: string) => `Connecté en tant que ${email}`,
+    notYou: "Ce n'est pas toi ?",
+  },
+
+  lobby: {
+    step: "Étape 2 sur 2",
+    stampPending: "En attente",
+    stampDenied: "Refusé",
+    titleWaiting: "Patience.",
+    titleDenied: "Pas cette fois.",
+    waiting:
+      "L'hôte a reçu un e-mail et doit t'ouvrir la porte avant que tu puisses voir le calendrier. Tu recevras un e-mail dès que ce sera fait — rien d'autre à faire.",
+    deniedPre:
+      "Ta demande n'a pas été acceptée. Si cela ressemble à une erreur, écris à",
+    nameGiven: "Nom donné",
+    signedInAs: "Connecté en tant que",
+    changeName: "Changer mon nom",
+  },
+
+  nav: {
+    book: "Réserver",
+    myTrips: "Mes séjours",
+    frontDesk: "Réception",
+    people: "Les gens",
+    settings: "Réglages",
+  },
+
+  calendar: {
+    weekdays: ["L", "M", "M", "J", "V", "S", "D"],
+    previousMonth: "Mois précédent",
+    nextMonth: "Mois suivant",
+    free: "Libre",
+    booked: "Réservé",
+    heldByHost: "Gardé par l'hôte",
+    requested: "Demandé",
+    yourSelection: "Ta sélection",
+    held: "gardé",
+    you: "Toi",
+    trimmed: (day: string) =>
+      `Ajusté au ${day} — les nuits suivantes sont déjà prises.`,
+    tipBooked: (who: string) => `${who} — réservé`,
+    tipRequested: (who: string) => `${who} — a demandé cette nuit`,
+    tipHeld: "L'hôte garde cette nuit",
+    tipPast: "Dans le passé",
+    tipFree: "Libre",
+  },
+
+  book: {
+    pickArrival: "Choisis ton arrivée.",
+    arrivingOn: (day: string) => `Arrivée le ${day}.`,
+    thenLeaving: "Maintenant le jour du départ.",
+    inOut: (nights: string, inDay: string, outDay: string) =>
+      `${nights} · arrivée ${inDay} · départ ${outDay}`,
+    contested: (who: string) =>
+      `${who} a aussi demandé certaines de ces nuits. Tu peux quand même envoyer la tienne — c'est l'hôte qui tranche.`,
+    whosComing: "Qui vient",
+    max: (n: number) => `+${n} max`,
+    theirName: "Son nom",
+    theirEmail: "E-mail pour l'invitation (facultatif)",
+    addSomeone: "+ Ajouter quelqu'un",
+    remove: "Retirer",
+    note: "Mot",
+    notePlaceholder: "Arrivée tardive, je viens avec le chien…",
+    submit: "Demander à venir",
+    submitEdit: "Enregistrer",
+    sending: "Envoi…",
+    editing: "Modification de ta demande",
+    alreadyAnswered: "Cette demande a déjà reçu une réponse.",
+    seeTrips: "Voir tes séjours",
+    nextStays: "Tes prochains séjours",
+    allOfThem: "Tous →",
+    nothingBooked: "Rien de réservé pour l'instant.",
+  },
+
+  trips: {
+    title: "Séjours",
+    comingUp: "À venir",
+    bookAnother: "En réserver un autre →",
+    beenAndGone: "Déjà passés",
+    closed: "Annulés et refusés",
+    nothingPlanned: "Rien de prévu.",
+    pickSomeNights: "Choisir des nuits",
+    withdraw: "Retirer",
+    cancel: "Annuler",
+    changeDates: "Changer les dates",
+    address: "Adresse",
+    confirmGuest: "Annuler ce séjour ? L'hôte en sera informé.",
+    confirmHost: "Annuler ce séjour et prévenir l'invité par e-mail ?",
+    reasonGuest: "Un mot d'explication (facultatif)",
+    reasonHost: "Pourquoi (facultatif)",
+    yesCancel: "Oui, annuler",
+    keepIt: "Le garder",
+    cancelling: "Annulation…",
+  },
+
+  host: {
+    title1: "Qui",
+    title2: " vient.",
+    toAnswer: "À traiter",
+    confirmedAhead: "Confirmés à venir",
+    nightsBooked: "Nuits réservées",
+    atTheDoor: "À la porte",
+    requests: "Demandes",
+    nothingWaiting: "Rien n'attend de réponse.",
+    peopleAtDoor: "Les gens à la porte",
+    everyone: "Tout le monde →",
+    confirmedStays: "Séjours confirmés",
+    noConfirmed: "Aucun séjour confirmé à venir.",
+    blockTitle: "Bloquer le calendrier",
+    next: (range: string) => `prochain : ${range}`,
+    accept: "Accepter",
+    decline: "Refuser",
+    sendDecline: "Envoyer le refus",
+    declineReason: "Dis-lui pourquoi (facultatif)",
+    confirming: "Confirmation…",
+    cancelStay: "Annuler le séjour",
+    calendarNotConnected:
+      "Google Agenda n'est pas connecté : les séjours acceptés ne créeront pas d'événement et n'enverront pas d'invitation.",
+    connectNow: "Le connecter",
+    noAddress:
+      "Tu n'as pas encore mis d'adresse — les invités ne savent pas où aller.",
+    addIt: "L'ajouter",
+    keepNights: "Garder des nuits pour toi",
+    drawRange: "Trace une période sur le calendrier.",
+    fromPickEnd: (day: string) => `À partir du ${day} — choisis la fin.`,
+    occasion: "C'est pour quoi",
+    occasionPlaceholder: "Mes parents viennent, gros dossier…",
+    occasionHint: "Les invités le verront si leurs dates sont annulées.",
+    holdNights: "Garder ces nuits",
+    checking: "Vérification…",
+    drawOver:
+      "Tu peux tracer par-dessus des nuits déjà prises. Rien n'est annulé tant que tu ne le dis pas.",
+    currentlyHeld: "Actuellement gardées",
+    release: "Libérer",
+    holdOn: "Attention",
+    blockAnyway: (n: number) => `Bloquer quand même et annuler ${n}`,
+  },
+
+  people: {
+    title: "Les gens",
+    atTheDoor: "À la porte",
+    backToDesk: "Retour à la réception →",
+    nobodyWaiting: "Personne n'attend.",
+    letIn: "Acceptés",
+    nobodyLetIn: "Personne n'a encore été accepté.",
+    turnedAway: "Refusés",
+    letThemIn: "Le faire entrer",
+    turnAway: "Refuser",
+    removeAccess: "Retirer l'accès",
+    removeWarning: "Retirer l'accès annule aussi ses séjours à venir.",
+    remove: "Retirer",
+    keep: "Garder",
+    letInAfterAll: "Le faire entrer finalement",
+    opening: "Ouverture…",
+    removing: "Retrait…",
+    host: "hôte",
+    joined: (date: string) => `Inscrit le ${date}`,
+    stays: (n: number) => `${n} séjour${n === 1 ? "" : "s"}`,
+    unnamed: "Sans nom",
+  },
+
+  settings: {
+    title: "Réglages",
+    addressSection: "Ton adresse",
+    addressLabel: "Adresse",
+    addressHint:
+      "Toutes les personnes acceptées la voient. La modifier envoie un e-mail à ceux qui ont un séjour confirmé à venir.",
+    gettingInLabel: "Pour entrer",
+    gettingInHint: "Code de la porte, quel interphone, où se garer, le nom du chat.",
+    gettingInPlaceholder:
+      "Interphone 4B. Les clés sont sous le pot bleu si je ne suis pas là.",
+    welcomeLabel: "Un mot sur la page de réservation",
+    welcomeHint: "Affiché au-dessus du calendrier. Laisse vide pour rien.",
+    welcomePlaceholder:
+      "La chambre d'amis tient à deux. Août est un chaos — désolé d'avance.",
+    calendarSection: "Google Agenda",
+    connectedAs: "Connecté avec",
+    connectedBody:
+      "Accepter un séjour crée un événement et invite tout le monde ; annuler le supprime.",
+    writesTo: "Les séjours sont écrits dans",
+    useCalendar: "Utiliser cet agenda",
+    disconnect: "Déconnecter",
+    connectBody:
+      "Connecte un compte Google pour que les séjours acceptés apparaissent dans ton agenda et que chacun reçoive une invitation.",
+    connect: "Connecter Google Agenda",
+    noWritable:
+      "Google n'a renvoyé aucun agenda modifiable. Les séjours acceptés iront dans l'agenda principal.",
+    wiring: "Ce qui est branché",
+    signIn: "Connexion",
+    email: "E-mail",
+    calendar: "Agenda",
+    hostAccount: "Compte hôte",
+    noneConfigured: "Aucun configuré",
+    notConnected: "Non connecté",
+    primaryCalendar: "Agenda principal",
+    alertsGoTo: (email: string) =>
+      `Les alertes concernant les demandes, les annulations et les nouveaux arrivants vont à ${email}.`,
+    backToDesk: "Retour à la réception",
+    language: "Langue",
+    calendarFlash: {
+      connected: "Google Agenda est connecté.",
+      denied: "Google n'a pas accordé l'accès — rien n'a changé.",
+      state: "Ce lien a expiré. Réessaie de connecter.",
+      failed: "La connexion a échoué. Regarde les logs du serveur et réessaie.",
+      "missing-client":
+        "Ajoute d'abord GOOGLE_CLIENT_ID et GOOGLE_CLIENT_SECRET.",
+    } as Record<string, string>,
+  },
+
+  email: {
+    dates: "Dates",
+    length: "Durée",
+    lengthValue: (nights: string, arrive: string, leave: string) =>
+      `${nights} — arrivée le ${arrive}, départ le ${leave}`,
+    who: "Qui",
+    note: "Mot",
+    reason: "Raison",
+    name: "Nom",
+    signedInAs: "Connecté avec",
+    saysTheyAre: "Se présente comme",
+    where: "Où",
+    gettingIn: "Pour entrer",
+    address: "Adresse",
+    footer: (app: string, city: string) =>
+      `Tu reçois ce message parce que tu as un compte sur ${app}, la page de réservation privée pour les séjours à ${city}.`,
+    seeYourTrip: "Voir ton séjour",
+    seeYourTrips: "Voir tes séjours",
+    reviewRequest: "Voir la demande",
+    acceptOrDecline: "Accepter ou refuser",
+    reviewIt: "Y jeter un œil",
+    chooseDates: "Choisir tes dates",
+    tryOther: "Essayer d'autres dates",
+    openCalendar: "Ouvrir le calendrier",
+    pickNew: "Choisir de nouvelles dates",
+    newMemberSubject: (name: string) => `${name} aimerait venir`,
+    newMemberHeading: "Quelqu'un frappe à la porte",
+    newMemberIntro: (name: string, city: string) =>
+      `${name} demande à rejoindre ta page ${city}. Personne ne voit le calendrier tant que tu n'as pas ouvert.`,
+    approvedSubject: (city: string) => `C'est bon — viens à ${city}`,
+    approvedHeading: "C'est bon",
+    approvedIntro:
+      "Ton compte est accepté. Choisis les dates qui t'arrangent et envoie une demande.",
+    approvedBody:
+      "Les dates déjà prises sont grisées sur le calendrier. Tu peux amener d'autres personnes et laisser un mot avec ce qu'il faut savoir.",
+    deniedSubject: (app: string) => `À propos de ta demande sur ${app}`,
+    deniedHeading: "Pas cette fois",
+    deniedIntro:
+      "Ta demande n'a pas été acceptée. Si tu penses que c'est une erreur, réponds à cet e-mail.",
+    requestedSubject: (name: string, range: string) => `${name} demande ${range}`,
+    requestedHeading: "Nouvelle demande de séjour",
+    requestedIntro: (name: string, nights: string) => `${name} demande ${nights}.`,
+    receivedSubject: (range: string) => `Demande envoyée — ${range}`,
+    receivedHeading: "Demande envoyée",
+    receivedIntro:
+      "Tes dates sont réservées le temps que l'hôte regarde. Tu recevras un e-mail dans tous les cas.",
+    updatedSubject: (name: string) => `${name} a modifié sa demande`,
+    updatedHeading: "Une demande a été modifiée",
+    updatedMoved: (from: string, to: string) => `Déplacée du ${from} au ${to}.`,
+    updatedSame: "Les détails ont changé, pas les dates.",
+    confirmedSubject: (range: string, city: string) => `Confirmé — ${range} à ${city}`,
+    confirmedHeading: "C'est réservé",
+    confirmedIntro: (day: string) => `À ${day}.`,
+    confirmedCalendar:
+      "Une invitation d'agenda part vers toutes les personnes concernées.",
+    declinedSubject: (range: string) => `À propos du ${range}`,
+    declinedHeading: "Ces dates ne vont pas",
+    declinedIntro:
+      "L'hôte ne peut pas recevoir à ces dates précises. D'autres dates restent libres sur le calendrier.",
+    cancelledSubject: (name: string, range: string) => `${name} a annulé ${range}`,
+    cancelledHeadingConfirmed: "Un séjour confirmé a été annulé",
+    cancelledHeadingRequest: "Une demande a été retirée",
+    cancelledIntro: (name: string) => `${name} a annulé. Ces nuits sont de nouveau libres.`,
+    byHostSubject: (range: string) => `Annulé — ${range}`,
+    byHostHeading: "Ton séjour a été annulé",
+    byHostIntro:
+      "Un imprévu du côté de l'hôte : ces dates ne sont plus disponibles.",
+    byHostBody:
+      "Toute invitation d'agenda pour ces dates a été retirée. Le reste du calendrier est toujours ouvert, choisis une autre période quand tu veux.",
+    addressSubject: (city: string) => `Nouvelle adresse pour ton séjour à ${city}`,
+    addressHeading: "L'adresse a changé",
+    addressIntro: (range: string) => `Où aller pour le ${range} :`,
+    blockReason: (reason: string) =>
+      `L'hôte a besoin du logement à ces dates — ${reason}`,
+    blockReasonPlain: "L'hôte a besoin du logement à ces dates.",
+    accessRemoved: "Ton accès à la page de réservation a été retiré.",
+  },
+
+  block: {
+    conflictTitle: (n: number) =>
+      `${n} séjour${n === 1 ? " est" : "s sont"} déjà sur ces dates`,
+    conflictDetail:
+      "Bloquer ces nuits les annulera. Toutes les personnes concernées reçoivent un e-mail, et les invitations d'agenda sont retirées.",
+  },
+
+  legal: {
+    updated: (date: string) => `Dernière mise à jour : ${date}`,
+    backToDoor: "Retour à la porte",
+    privacyDate: "8 septembre 2026",
+  },
+
+  errors: {
+    signedOut: "Tu es déconnecté. Recharge la page.",
+    notApproved: "Ton compte attend encore d'être accepté.",
+    hostOnly: "Seul l'hôte peut faire ça.",
+    hostCannotBook:
+      "Tu es l'hôte — bloque les dates dont tu as besoin au lieu de les réserver.",
+    nameTooShort: "Il faut au moins deux caractères.",
+    nameTooLong: "Ce nom est un peu long.",
+    pickBothDates: "Choisis une date d'arrivée et une date de départ sur le calendrier.",
+    arrivalPast: "Cette date d'arrivée est dans le passé.",
+    departureBeforeArrival: "Le départ doit être après l'arrivée.",
+    tooLong: (nights: number, max: number) =>
+      `Ça fait ${nights} nuits. Au-delà de ${max}, mieux vaut un coup de fil.`,
+    beyondHorizon: "C'est plus loin que ce que le calendrier permet.",
+    badEmail: (email: string) => `« ${email} » ne ressemble pas à une adresse e-mail.`,
+    namesTooLong: "Ces noms sont trop longs.",
+    tooManyCompanions: (max: number) =>
+      `Tu peux amener ${max} personnes au maximum. Demande à l'hôte s'il t'en faut plus.`,
+    noteTooLong: "Ce mot est plus long que nécessaire.",
+    heldByHost: (range: string) =>
+      `L'hôte a gardé ${range} pour lui. Ces nuits ne sont pas réservables.`,
+    alreadyBooked: (range: string) =>
+      `${range} est déjà réservé. Choisis des nuits encore libres sur le calendrier.`,
+    selfOverlap: (range: string) =>
+      `Tu as déjà un séjour du ${range}. Modifie celui-là plutôt que d'en ajouter un second.`,
+    tripGone: "Ce séjour n'existe plus.",
+    notYourTrip: "Ce n'est pas ton séjour.",
+    onlyPendingEditable:
+      "Seules les demandes sans réponse peuvent être modifiées. Annule celle-ci et envoies-en une nouvelle.",
+    requestGone: "Cette demande n'existe plus.",
+    alreadyDecided: (status: string) => `Cette demande est déjà : ${status}.`,
+    unblockFirst: (range: string) =>
+      `Tu as gardé ${range} pour toi. Retire ce blocage si tu veux accepter.`,
+    collides: (range: string) =>
+      `Ces nuits chevauchent un séjour déjà confirmé (${range}). Annule-le d'abord.`,
+    pickRange: "Choisis une première et une dernière nuit sur le calendrier.",
+    endAfterStart: "La fin du blocage doit venir après le début.",
+    unknownDecision: "Décision inconnue.",
+    noSelfModerate: "Tu ne peux pas te modérer toi-même.",
+    personGone: "Cette personne n'a plus de compte.",
+    pickCalendar: "Choisis un agenda.",
+    calendarGone: "Cet agenda n'est plus disponible sur ce compte.",
+  },
+
+  ok: {
+    saved: "Enregistré.",
+    requestSent:
+      "Demande envoyée. Tu recevras un e-mail dès que l'hôte aura répondu.",
+    requestUpdated: "Demande mise à jour.",
+    alreadyCancelled: "Déjà annulé.",
+    alreadyDeclined: "Cette demande avait déjà été refusée.",
+    cancelledByHost: "Annulé, et l'invité a été prévenu.",
+    cancelledByGuest: "Annulé. L'hôte a été prévenu.",
+    declined: (name: string) => `Refusé. ${name} a été prévenu.`,
+    accepted: "Accepté. Les invitations partent.",
+    acceptedNoCalendar: (error: string) =>
+      `Accepté et l'invité a reçu son e-mail — mais l'événement d'agenda a échoué : ${error}`,
+    nightsYours: "Ces nuits sont à toi.",
+    blockedAndCancelled: (n: number) =>
+      `Bloqué, et ${n} séjour${n === 1 ? "" : "s"} annulé${n === 1 ? "" : "s"}.`,
+    nightsOpen: "Ces nuits sont de nouveau libres.",
+    canBookNow: (name: string) => `${name} peut réserver.`,
+    accessRemoved: "Accès retiré.",
+    accessRemovedWithTrips: (n: number) =>
+      `Accès retiré, et ${n} séjour${n === 1 ? "" : "s"} à venir annulé${n === 1 ? "" : "s"}.`,
+    addressEmailed: (n: number) =>
+      `Enregistré. ${n} invité${n === 1 ? "" : "s"} avec un séjour à venir ${n === 1 ? "a reçu" : "ont reçu"} la nouvelle adresse par e-mail.`,
+    calendarChosen: (name: string) => `Les nouveaux séjours iront dans « ${name} ».`,
+  },
+};

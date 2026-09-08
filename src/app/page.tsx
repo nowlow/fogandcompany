@@ -7,11 +7,12 @@ import { SignIn } from "@/components/SignIn";
 import { Skyline } from "@/components/Skyline";
 import { Mark } from "@/components/ui";
 import { APP_NAME } from "@/lib/constants";
+import { getDict } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function Landing() {
-  const user = await currentUser();
+  const [user, t] = await Promise.all([currentUser(), getDict()]);
 
   if (user) {
     if (!user.displayName || user.status === "profile") redirect("/welcome");
@@ -51,9 +52,9 @@ export default async function Landing() {
             className="rise -mt-4 text-center text-[clamp(2rem,7vw,3.4rem)] leading-[0.88] tight"
             style={{ animationDelay: "100ms" }}
           >
-            Come stay
+            {t.landing.title1}
             <br />
-            <em className="wonky not-italic text-orange">a while.</em>
+            <em className="wonky not-italic text-orange">{t.landing.title2}</em>
           </h1>
 
           <div className="rise mt-7 w-full" style={{ animationDelay: "220ms" }}>
@@ -64,11 +65,11 @@ export default async function Landing() {
 
         <footer className="shrink-0 pb-5 text-center text-[11.5px] text-ink-faint">
           <Link href="/privacy" className="hover:text-orange">
-            Privacy
+            {t.common.privacy}
           </Link>
           <span className="px-2">·</span>
           <Link href="/usage" className="hover:text-orange">
-            House rules
+            {t.common.houseRules}
           </Link>
         </footer>
       </div>
@@ -81,50 +82,36 @@ export default async function Landing() {
       <section className="border-t border-rule bg-card/40">
         <div className="mx-auto max-w-[680px] px-6 py-16 sm:px-10">
           <h2 className="text-[1.6rem] leading-snug tight">
-            What this is
+            {t.landing.aboutHeading}
           </h2>
           <div className="mt-4 space-y-4 text-[15px] leading-relaxed text-ink-soft">
+            <p>{t.landing.aboutBody(APP_NAME)}</p>
             <p>
-              {APP_NAME} is a private booking page for one person&rsquo;s
-              friends and family. Guests sign in, ask to be let in, and once the
-              host approves them they can see which nights are free, request a
-              stay of their own, bring up to two other people and leave a note.
-              The host accepts or declines each request, and keeps dates for
-              themselves when they need the room.
+              <strong className="font-semibold text-ink">
+                {t.landing.whyGoogleHeading}
+              </strong>{" "}
+              {t.landing.whyGoogleBody}
             </p>
             <p>
               <strong className="font-semibold text-ink">
-                Why it asks for a Google account.
+                {t.landing.whyCalendarHeading}
               </strong>{" "}
-              Signing in with Google tells the site who you are — your name and
-              email address — so the host knows whose booking is whose. That is
-              the only thing it is used for.
+              {t.landing.whyCalendarBody}
             </p>
             <p>
-              <strong className="font-semibold text-ink">
-                Why it asks for Google Calendar.
-              </strong>{" "}
-              Only the host is asked for this, and only to write confirmed
-              stays onto a calendar of their choosing and send an invitation to
-              everyone on the booking. Cancelling a stay deletes that event
-              again. The app never reads or changes anything else on the
-              calendar, and guests are never asked for calendar access.
-            </p>
-            <p>
-              Nothing is sold, advertised against, or shared beyond the services
-              needed to run the site. The full detail is in the{" "}
+              {t.landing.aboutTail}{" "}
               <Link
                 href="/privacy"
                 className="text-ink underline underline-offset-4"
               >
-                privacy policy
+                {t.common.privacy.toLowerCase()}
               </Link>{" "}
-              and the{" "}
+              {t.landing.aboutAnd}{" "}
               <Link
                 href="/usage"
                 className="text-ink underline underline-offset-4"
               >
-                house rules
+                {t.common.houseRules.toLowerCase()}
               </Link>
               .
             </p>

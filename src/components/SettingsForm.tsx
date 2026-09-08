@@ -5,6 +5,7 @@ import { saveHostSettings, chooseCalendar } from "@/actions/host";
 import { idle } from "@/actions/state";
 import { SubmitButton, Notice, Labelled } from "./form";
 import type { CalendarChoice } from "@/lib/calendar";
+import { useT } from "./I18n";
 
 export function AddressForm({
   address,
@@ -15,14 +16,15 @@ export function AddressForm({
   addressNote: string;
   welcomeNote: string;
 }) {
+  const t = useT();
   const [state, formAction] = useActionState(saveHostSettings, idle);
 
   return (
     <form action={formAction} className="space-y-7">
       <Labelled
-        label="Address"
+        label={t.settings.addressLabel}
         htmlFor="address"
-        hint="Everyone you've let in can see this. Changing it emails anyone with a confirmed stay ahead."
+        hint={t.settings.addressHint}
       >
         <textarea
           id="address"
@@ -36,9 +38,9 @@ export function AddressForm({
       </Labelled>
 
       <Labelled
-        label="Getting in"
+        label={t.settings.gettingInLabel}
         htmlFor="addressNote"
-        hint="Door code, which buzzer, where to park, the cat's name."
+        hint={t.settings.gettingInHint}
       >
         <textarea
           id="addressNote"
@@ -46,15 +48,15 @@ export function AddressForm({
           defaultValue={addressNote}
           rows={2}
           maxLength={600}
-          placeholder="Buzzer 4B. Keys under the blue pot if I'm out."
+          placeholder={t.settings.gettingInPlaceholder}
           className="field resize-none"
         />
       </Labelled>
 
       <Labelled
-        label="A word for the booking page"
+        label={t.settings.welcomeLabel}
         htmlFor="welcomeNote"
-        hint="Shown above the calendar. Leave empty for none."
+        hint={t.settings.welcomeHint}
       >
         <textarea
           id="welcomeNote"
@@ -62,12 +64,12 @@ export function AddressForm({
           defaultValue={welcomeNote}
           rows={2}
           maxLength={600}
-          placeholder="The spare room fits two. August is chaos — sorry in advance."
+          placeholder={t.settings.welcomePlaceholder}
           className="field resize-none"
         />
       </Labelled>
 
-      <SubmitButton pendingLabel="Saving…">Save</SubmitButton>
+      <SubmitButton pendingLabel={t.common.saving}>{t.common.save}</SubmitButton>
       <Notice state={state} />
     </form>
   );
@@ -80,20 +82,16 @@ export function CalendarPicker({
   calendars: CalendarChoice[];
   selected: string | null;
 }) {
+  const t = useT();
   const [state, formAction] = useActionState(chooseCalendar, idle);
 
   if (!calendars.length) {
-    return (
-      <p className="text-[13px] text-ink-soft">
-        No writable calendars came back from Google. Accepted stays will land on
-        the primary calendar.
-      </p>
-    );
+    return <p className="text-[13px] text-ink-soft">{t.settings.noWritable}</p>;
   }
 
   return (
     <form action={formAction}>
-      <Labelled label="Stays are written to" htmlFor="calendarId">
+      <Labelled label={t.settings.writesTo} htmlFor="calendarId">
         <select
           id="calendarId"
           name="calendarId"
@@ -103,13 +101,13 @@ export function CalendarPicker({
           {calendars.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
-              {c.primary ? " (primary)" : ""}
+              {c.primary ? ` (${t.settings.primaryCalendar})` : ""}
             </option>
           ))}
         </select>
       </Labelled>
-      <SubmitButton pendingLabel="Saving…" className="btn btn-ghost mt-4">
-        Use this calendar
+      <SubmitButton pendingLabel={t.common.saving} className="btn btn-ghost mt-4">
+        {t.settings.useCalendar}
       </SubmitButton>
       <Notice state={state} />
     </form>

@@ -4,12 +4,13 @@ import { requireUser } from "@/lib/session";
 import { Mark, Eyebrow } from "@/components/ui";
 import { endSession } from "@/actions/auth";
 import { APP_NAME, HOST_EMAIL } from "@/lib/constants";
+import { getDict } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Waiting room" };
+
 
 export default async function Lobby() {
-  const user = await requireUser();
+  const [user, t] = await Promise.all([requireUser(), getDict()]);
   if (!user.displayName || user.status === "profile") redirect("/welcome");
   if (user.status === "approved") redirect("/stay");
 
@@ -29,12 +30,12 @@ export default async function Lobby() {
           <span
             className={`stamp mt-2 shrink-0 -rotate-6 ${denied ? "text-ink-faint" : "text-orange"}`}
           >
-            {denied ? "Declined" : "Pending"}
+            {denied ? t.lobby.stampDenied : t.lobby.stampPending}
           </span>
           <div>
-            <Eyebrow>Step two of two</Eyebrow>
+            <Eyebrow>{t.lobby.step}</Eyebrow>
             <h1 className="mt-2 text-display leading-[0.95] tight">
-              {denied ? "Not this time." : "Hang tight."}
+              {denied ? t.lobby.titleDenied : t.lobby.titleWaiting}
             </h1>
           </div>
         </div>
@@ -42,40 +43,35 @@ export default async function Lobby() {
         <p className="mt-7 max-w-[46ch] text-[16.5px] leading-relaxed text-ink-soft">
           {denied ? (
             <>
-              Your request to join wasn&rsquo;t accepted. If that looks like a
-              mistake, write to{" "}
+              {t.lobby.deniedPre}{" "}
               <a className="underline underline-offset-4" href={`mailto:${HOST_EMAIL}`}>
                 {HOST_EMAIL}
               </a>
               .
             </>
           ) : (
-            <>
-              The host has been emailed and needs to let you in before you can
-              see the calendar. You&rsquo;ll get an email the moment that
-              happens — nothing else to do.
-            </>
+            t.lobby.waiting
           )}
         </p>
 
         <dl className="mt-10 grid gap-px border border-rule bg-rule sm:grid-cols-2">
           <div className="bg-card p-5">
-            <dt className="eyebrow">Name given</dt>
+            <dt className="eyebrow">{t.lobby.nameGiven}</dt>
             <dd className="mt-1.5 text-[17px]">{user.displayName}</dd>
           </div>
           <div className="bg-card p-5">
-            <dt className="eyebrow">Signed in as</dt>
+            <dt className="eyebrow">{t.lobby.signedInAs}</dt>
             <dd className="mt-1.5 truncate text-[17px]">{user.email}</dd>
           </div>
         </dl>
 
         <div className="mt-8 flex items-center gap-5 border-t border-rule pt-5">
           <Link href="/welcome" className="btn-quiet">
-            Change my name
+            {t.lobby.changeName}
           </Link>
           <form action={endSession}>
             <button type="submit" className="btn-quiet">
-              Sign out
+              {t.common.signOut}
             </button>
           </form>
         </div>

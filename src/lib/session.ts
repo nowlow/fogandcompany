@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "./auth";
 import type { User } from "./schema";
 import { ActionError } from "./errors";
+import { getDict } from "./i18n";
 
 export { ActionError };
 
@@ -51,10 +52,10 @@ export async function requireGuest(): Promise<User> {
 /* -------------------------- guards for actions -------------------------- */
 
 export async function actorApproved(): Promise<User> {
+  const t = await getDict();
   const user = await currentUser();
-  if (!user) throw new ActionError("You are signed out. Reload and sign in again.");
-  if (user.status !== "approved")
-    throw new ActionError("Your account is still waiting for approval.");
+  if (!user) throw new ActionError(t.errors.signedOut);
+  if (user.status !== "approved") throw new ActionError(t.errors.notApproved);
   return user;
 }
 
@@ -62,14 +63,12 @@ export async function actorApproved(): Promise<User> {
 export async function actorGuest(): Promise<User> {
   const user = await actorApproved();
   if (isHost(user))
-    throw new ActionError(
-      "You're the host — block the dates you need instead of booking them.",
-    );
+    throw new ActionError((await getDict()).errors.hostCannotBook);
   return user;
 }
 
 export async function actorHost(): Promise<User> {
   const user = await actorApproved();
-  if (!isHost(user)) throw new ActionError("Only the host can do that.");
+  if (!isHost(user)) throw new ActionError((await getDict()).errors.hostOnly);
   return user;
 }

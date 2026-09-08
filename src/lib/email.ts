@@ -16,6 +16,8 @@ export type Mail = {
   cta?: { label: string; url: string };
   tone?: "neutral" | "good" | "warn";
   replyTo?: string;
+  /** Localised sign-off; falls back to English. */
+  footer?: string;
 };
 
 const PALETTE = {
@@ -94,7 +96,7 @@ function renderHtml(mail: Mail): string {
         ${paragraphs || cta ? `<tr><td style="padding:20px 32px 0;">${paragraphs}${cta}</td></tr>` : ""}
         <tr><td style="padding:26px 32px 26px;">
           <p style="margin:18px 0 0;padding-top:16px;border-top:1px solid ${PALETTE.rule};font:400 12px/1.6 ${sans};color:${PALETTE.muted};">
-            You are receiving this because you have an account on ${esc(APP_NAME)}, the private booking page for visits to ${esc(CITY)}.
+            ${esc(mail.footer ?? `You are receiving this because you have an account on ${APP_NAME}, the private booking page for visits to ${CITY}.`)}
           </p>
         </td></tr>
       </table>

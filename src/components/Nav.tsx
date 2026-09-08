@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Mark, NavLink } from "./ui";
 import { endSession } from "@/actions/auth";
 import { APP_NAME } from "@/lib/constants";
+import { useT } from "./I18n";
 
 export function Nav({
   name,
@@ -16,15 +17,16 @@ export function Nav({
   pendingCount?: number;
 }) {
   const path = usePathname();
+  const t = useT();
   const links = host
     ? [
-        { href: "/host", label: "Front desk" },
-        { href: "/host/people", label: "People" },
-        { href: "/host/settings", label: "Settings" },
+        { href: "/host", label: t.nav.frontDesk },
+        { href: "/host/people", label: t.nav.people },
+        { href: "/host/settings", label: t.nav.settings },
       ]
     : [
-        { href: "/stay", label: "Book a stay" },
-        { href: "/trips", label: "My trips" },
+        { href: "/stay", label: t.nav.book },
+        { href: "/trips", label: t.nav.myTrips },
       ];
 
   return (
@@ -60,7 +62,7 @@ export function Nav({
           </span>
           <form action={endSession}>
             <button type="submit" className="btn-quiet">
-              Sign out
+              {t.common.signOut}
             </button>
           </form>
         </div>

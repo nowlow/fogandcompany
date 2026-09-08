@@ -22,12 +22,13 @@ import {
   today,
   type ISODate,
 } from "@/lib/dates";
+import { getDict, type Dict } from "@/lib/i18n";
 import { BOOKING_HORIZON_DAYS, MAX_COMPANIONS, MAX_NIGHTS } from "@/lib/constants";
 import { fail, done, str, optionalStr, toState, type ActionState } from "./shared";
 
 /* -------------------------------- parsing -------------------------------- */
 
-function readCompanions(form: FormData): Companion[] {
+function readCompanions(form: FormData, t: Dict): Companion[] {
   const names = form.getAll("companionName").map((v) => String(v).trim());
   const emails = form.getAll("companionEmail").map((v) => String(v).trim());
 
@@ -36,39 +37,35 @@ function readCompanions(form: FormData): Companion[] {
     if (!name) return;
     const email = emails[i] ?? "";
     if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      throw new ActionError(`"${email}" doesn't look like an email address.`);
+      throw new ActionError(t.errors.badEmail(email));
     }
-    if (name.length > 60) throw new ActionError("Those names are too long.");
+    if (name.length > 60) throw new ActionError(t.errors.namesTooLong);
     companions.push({ name, email: email || null });
   });
 
   if (companions.length > MAX_COMPANIONS) {
-    throw new ActionError(
-      `You can bring at most ${MAX_COMPANIONS} other people. Ask the host if you need more room.`,
-    );
+    throw new ActionError(t.errors.tooManyCompanions(MAX_COMPANIONS));
   }
   return companions;
 }
 
-function readDates(form: FormData): { startDate: ISODate; endDate: ISODate } {
+function readDates(form: FormData, t: Dict): { startDate: ISODate; endDate: ISODate } {
   const startDate = str(form, "startDate");
   const endDate = str(form, "endDate");
 
   if (!isISODate(startDate) || !isISODate(endDate)) {
-    throw new ActionError("Pick an arrival and a departure date on the calendar.");
+    throw new ActionError(t.errors.pickBothDates);
   }
   const from = today();
-  if (startDate < from) throw new ActionError("That arrival date is in the past.");
+  if (startDate < from) throw new ActionError(t.errors.arrivalPast);
   if (endDate <= startDate)
-    throw new ActionError("The departure date has to be after the arrival date.");
+    throw new ActionError(t.errors.departureBeforeArrival);
 
   const nights = nightsBetween(startDate, endDate);
   if (nights > MAX_NIGHTS)
-    throw new ActionError(
-      `That's ${nights} nights. Anything longer than ${MAX_NIGHTS} is worth a phone call instead.`,
-    );
+    throw new ActionError(t.errors.tooLong(nights, MAX_NIGHTS));
   if (startDate > addDays(from, BOOKING_HORIZON_DAYS))
-    throw new ActionError("That's further ahead than the calendar goes.");
+    throw new ActionError(t.errors.beyondHorizon);
 
   return { startDate, endDate };
 }
@@ -77,6 +74,7 @@ function readDates(form: FormData): { startDate: ISODate; endDate: ISODate } {
 async function assertNightsFree(
   startDate: ISODate,
   endDate: ISODate,
+  t: Dict,
   excludeTripId?: string,
 ) {
   const [taken, blocked] = await Promise.all([
@@ -87,13 +85,13 @@ async function assertNightsFree(
   if (blocked.length) {
     const b = blocked[0];
     throw new ActionError(
-      `The host has kept ${formatRange(b.startDate, b.endDate)} for themselves. Those nights aren't bookable.`,
+      t.errors.heldByHost(formatRange(b.startDate, b.endDate, t.intl)),
     );
   }
   if (taken.length) {
-    const t = taken[0];
+    const clash = taken[0];
     throw new ActionError(
-      `${formatRange(t.startDate, t.endDate)} is already booked. Pick nights that are still open on the calendar.`,
+      t.errors.alreadyBooked(formatRange(clash.startDate, clash.endDate, t.intl)),
     );
   }
 }
@@ -102,6 +100,7 @@ async function assertNoSelfOverlap(
   userId: string,
   startDate: ISODate,
   endDate: ISODate,
+  t: Dict,
   excludeTripId?: string,
 ) {
   const rows = await db
@@ -120,7 +119,7 @@ async function assertNoSelfOverlap(
 
   if (rows.length) {
     throw new ActionError(
-      `You already have a stay on ${formatRange(rows[0].startDate, rows[0].endDate)}. Change that one instead of adding a second.`,
+      t.errors.selfOverlap(formatRange(rows[0].startDate, rows[0].endDate, t.intl)),
     );
   }
 }
@@ -132,15 +131,15 @@ export async function requestTrip(
   form: FormData,
 ): Promise<ActionState> {
   try {
+    const t = await getDict();
     const user = await actorGuest();
-    const { startDate, endDate } = readDates(form);
-    const companions = readCompanions(form);
+    const { startDate, endDate } = readDates(form, t);
+    const companions = readCompanions(form, t);
     const note = optionalStr(form, "note");
-    if (note && note.length > 1000)
-      return fail("That note is longer than it needs to be.");
+    if (note && note.length > 1000) return fail(t.errors.noteTooLong);
 
-    await assertNoSelfOverlap(user.id, startDate, endDate);
-    await assertNightsFree(startDate, endDate);
+    await assertNoSelfOverlap(user.id, startDate, endDate, t);
+    await assertNightsFree(startDate, endDate, t);
 
     const [trip] = await db
       .insert(trips)
@@ -155,7 +154,7 @@ export async function requestTrip(
     revalidatePath("/stay");
     revalidatePath("/trips");
     revalidatePath("/host");
-    return done("Request sent. You'll get an email as soon as the host answers.");
+    return done(t.ok.requestSent);
   } catch (error) {
     return toState(error);
   }
@@ -166,23 +165,21 @@ export async function updateTrip(
   form: FormData,
 ): Promise<ActionState> {
   try {
+    const t = await getDict();
     const user = await actorApproved();
     const tripId = str(form, "tripId");
     const row = await tripWithGuest(tripId);
-    if (!row) return fail("That trip no longer exists.");
+    if (!row) return fail(t.errors.tripGone);
     if (row.trip.userId !== user.id && !isHost(user))
-      return fail("That isn't your trip.");
-    if (row.trip.status !== "pending")
-      return fail(
-        "Only requests the host hasn't answered yet can be edited. Cancel it and send a new one.",
-      );
+      return fail(t.errors.notYourTrip);
+    if (row.trip.status !== "pending") return fail(t.errors.onlyPendingEditable);
 
-    const { startDate, endDate } = readDates(form);
-    const companions = readCompanions(form);
+    const { startDate, endDate } = readDates(form, t);
+    const companions = readCompanions(form, t);
     const note = optionalStr(form, "note");
 
-    await assertNoSelfOverlap(row.trip.userId, startDate, endDate, tripId);
-    await assertNightsFree(startDate, endDate, tripId);
+    await assertNoSelfOverlap(row.trip.userId, startDate, endDate, t, tripId);
+    await assertNightsFree(startDate, endDate, t, tripId);
 
     const [updated] = await db
       .update(trips)
@@ -195,7 +192,7 @@ export async function updateTrip(
     revalidatePath("/stay");
     revalidatePath("/trips");
     revalidatePath("/host");
-    return done("Request updated.");
+    return done(t.ok.requestUpdated);
   } catch (error) {
     return toState(error);
   }
@@ -206,17 +203,18 @@ export async function cancelTrip(
   form: FormData,
 ): Promise<ActionState> {
   try {
+    const t = await getDict();
     const user = await actorApproved();
     const tripId = str(form, "tripId");
     const reason = optionalStr(form, "reason");
 
     const row = await tripWithGuest(tripId);
-    if (!row) return fail("That trip no longer exists.");
+    if (!row) return fail(t.errors.tripGone);
 
     const owner = row.trip.userId === user.id;
-    if (!owner && !isHost(user)) return fail("That isn't your trip.");
-    if (row.trip.status === "cancelled") return done("Already cancelled.");
-    if (row.trip.status === "denied") return done("That request was already declined.");
+    if (!owner && !isHost(user)) return fail(t.errors.notYourTrip);
+    if (row.trip.status === "cancelled") return done(t.ok.alreadyCancelled);
+    if (row.trip.status === "denied") return done(t.ok.alreadyDeclined);
 
     const byHost = !owner;
 
@@ -243,9 +241,7 @@ export async function cancelTrip(
     revalidatePath("/stay");
     revalidatePath("/trips");
     revalidatePath("/host");
-    return done(
-      byHost ? "Cancelled, and the guest has been told." : "Cancelled. The host has been notified.",
-    );
+    return done(byHost ? t.ok.cancelledByHost : t.ok.cancelledByGuest);
   } catch (error) {
     return toState(error);
   }

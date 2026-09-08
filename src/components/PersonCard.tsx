@@ -1,13 +1,8 @@
 import type { ReactNode } from "react";
 import type { User } from "@/lib/schema";
+import { getDict } from "@/lib/i18n";
 
-const WHEN = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-  year: "numeric",
-});
-
-export function PersonCard({
+export async function PersonCard({
   person,
   trips,
   actions,
@@ -18,6 +13,12 @@ export function PersonCard({
   actions?: ReactNode;
   dim?: boolean;
 }) {
+  const t = await getDict();
+  const when = new Intl.DateTimeFormat(t.intl, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
   const initials = (person.displayName ?? person.name ?? "?")
     .split(/\s+/)
     .slice(0, 2)
@@ -34,9 +35,9 @@ export function PersonCard({
 
       <div className="min-w-0 flex-1">
         <h3 className="text-[1.15rem] leading-tight tight">
-          {person.displayName ?? person.name ?? "Unnamed"}
+          {person.displayName ?? person.name ?? t.people.unnamed}
           {person.role === "host" ? (
-            <span className="eyebrow ml-2 !text-orange">host</span>
+            <span className="eyebrow ml-2 !text-orange">{t.people.host}</span>
           ) : null}
         </h3>
         <p className="truncate text-[12.5px] text-ink-soft">{person.email}</p>
@@ -46,10 +47,8 @@ export function PersonCard({
           </p>
         ) : null}
         <p className="mt-1 text-[11.5px] text-ink-faint">
-          Joined {WHEN.format(person.createdAt)}
-          {typeof trips === "number"
-            ? ` · ${trips} stay${trips === 1 ? "" : "s"}`
-            : ""}
+          {t.people.joined(when.format(person.createdAt))}
+          {typeof trips === "number" ? ` · ${t.people.stays(trips)}` : ""}
         </p>
       </div>
 

@@ -77,17 +77,20 @@ export function monthGrid(month: ISODate): (ISODate | null)[][] {
 
 /* ------------------------------- formatting ------------------------------ */
 
-const fmt = (opts: Intl.DateTimeFormatOptions) =>
-  new Intl.DateTimeFormat("en-US", { ...opts, timeZone: "UTC" });
+/** Every formatter takes the BCP-47 tag from the active dictionary. */
+const fmt = (locale: string, opts: Intl.DateTimeFormatOptions) =>
+  new Intl.DateTimeFormat(locale, { ...opts, timeZone: "UTC" });
 
-export function formatDay(iso: ISODate): string {
-  return fmt({ weekday: "short", month: "short", day: "numeric" }).format(
-    toUTC(iso),
-  );
+export function formatDay(iso: ISODate, locale = "en-US"): string {
+  return fmt(locale, {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  }).format(toUTC(iso));
 }
 
-export function formatFull(iso: ISODate): string {
-  return fmt({
+export function formatFull(iso: ISODate, locale = "en-US"): string {
+  return fmt(locale, {
     weekday: "long",
     month: "long",
     day: "numeric",
@@ -95,40 +98,33 @@ export function formatFull(iso: ISODate): string {
   }).format(toUTC(iso));
 }
 
-export function formatMonthLabel(iso: ISODate): string {
-  return fmt({ month: "long", year: "numeric" }).format(toUTC(iso));
+export function formatMonthLabel(iso: ISODate, locale = "en-US"): string {
+  return fmt(locale, { month: "long", year: "numeric" }).format(toUTC(iso));
 }
 
-/** "Sep 12 – 16, 2026" / "Dec 29, 2026 – Jan 3, 2027" */
-export function formatRange(start: ISODate, end: ISODate): string {
+/** "Sep 12 – 16, 2026" / "12 – 16 sept. 2026" */
+export function formatRange(
+  start: ISODate,
+  end: ISODate,
+  locale = "en-US",
+): string {
   const s = toUTC(start);
   const e = toUTC(end);
   const sameYear = start.slice(0, 4) === end.slice(0, 4);
   const sameMonth = sameYear && start.slice(0, 7) === end.slice(0, 7);
   const left = sameYear
-    ? fmt({ month: "short", day: "numeric" }).format(s)
-    : fmt({ month: "short", day: "numeric", year: "numeric" }).format(s);
+    ? fmt(locale, { month: "short", day: "numeric" }).format(s)
+    : fmt(locale, { month: "short", day: "numeric", year: "numeric" }).format(s);
   const right = sameMonth
-    ? fmt({ day: "numeric" }).format(e)
-    : fmt({ month: "short", day: "numeric" }).format(e);
+    ? fmt(locale, { day: "numeric" }).format(e)
+    : fmt(locale, { month: "short", day: "numeric" }).format(e);
   return `${left} – ${right}, ${end.slice(0, 4)}`;
 }
 
-export function nightsLabel(start: ISODate, end: ISODate): string {
-  const n = nightsBetween(start, end);
-  return `${n} night${n === 1 ? "" : "s"}`;
-}
-
 /** "in 3 days" / "today" / "2 weeks ago" — coarse on purpose. */
-export function relativeToToday(iso: ISODate): string {
+export function relativeToToday(iso: ISODate, locale = "en-US"): string {
   const days = nightsBetween(today(), iso);
-  if (days === 0) return "today";
-  if (days === 1) return "tomorrow";
-  if (days === -1) return "yesterday";
-  if (days > 0)
-    return days < 14
-      ? `in ${days} days`
-      : `in ${Math.round(days / 7)} weeks`;
-  const past = -days;
-  return past < 14 ? `${past} days ago` : `${Math.round(past / 7)} weeks ago`;
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+  if (Math.abs(days) < 14) return rtf.format(days, "day");
+  return rtf.format(Math.round(days / 7), "week");
 }

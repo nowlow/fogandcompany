@@ -2,8 +2,9 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Mark } from "./ui";
 import { APP_NAME } from "@/lib/constants";
+import { getDict } from "@/lib/i18n";
 
-export function LegalPage({
+export async function LegalPage({
   title,
   updated,
   children,
@@ -12,6 +13,7 @@ export function LegalPage({
   updated: string;
   children: ReactNode;
 }) {
+  const t = await getDict();
   return (
     <main className="mx-auto min-h-dvh max-w-[680px] px-6 py-10 sm:px-10">
       <Link href="/" className="flex items-center gap-2.5">
@@ -25,19 +27,19 @@ export function LegalPage({
         {title}
         <em className="wonky not-italic text-orange">.</em>
       </h1>
-      <p className="eyebrow mt-3">Last updated {updated}</p>
+      <p className="eyebrow mt-3">{t.legal.updated(updated)}</p>
 
       <div className="mt-10 space-y-8">{children}</div>
 
       <footer className="mt-16 flex gap-5 border-t border-rule pt-5 text-[12px] text-ink-faint">
         <Link href="/privacy" className="hover:text-orange">
-          Privacy
+          {t.common.privacy}
         </Link>
         <Link href="/usage" className="hover:text-orange">
-          House rules
+          {t.common.houseRules}
         </Link>
         <Link href="/" className="hover:text-orange">
-          Back to the door
+          {t.legal.backToDoor}
         </Link>
       </footer>
     </main>

@@ -8,6 +8,7 @@ import { idle } from "@/actions/state";
 import type { CalendarPayload } from "@/lib/availability";
 import type { Block } from "@/lib/schema";
 import { formatRange, nightsBetween, formatDay } from "@/lib/dates";
+import { useT } from "./I18n";
 
 export function BlockForm({
   data,
@@ -16,6 +17,7 @@ export function BlockForm({
   data: CalendarPayload;
   blocks: Block[];
 }) {
+  const t = useT();
   const [state, formAction] = useActionState(blockDates, idle);
   const [selection, setSelection] = useState<Selection>({ start: null, end: null });
   const [reason, setReason] = useState("");
@@ -43,8 +45,7 @@ export function BlockForm({
           onSelect={setSelection}
         />
         <p className="mt-3 text-[12.5px] leading-relaxed text-ink-faint">
-          You can draw over nights that are already taken. Nothing is cancelled
-          until you say so.
+          {t.host.drawOver}
         </p>
       </section>
 
@@ -54,36 +55,39 @@ export function BlockForm({
         <input type="hidden" name="endDate" value={selection.end ?? ""} />
 
         <div className="border-t-2 border-ink pt-4">
-          <p className="eyebrow mb-3">Keep nights for yourself</p>
+          <p className="eyebrow mb-3">{t.host.keepNights}</p>
           {ready ? (
             <>
               <p className="font-display text-[1.6rem] leading-[1.1] tight">
-                {formatRange(selection.start!, selection.end!)}
+                {formatRange(selection.start!, selection.end!, t.intl)}
               </p>
               <p className="num mt-1.5 text-[13px] text-ink-soft">
-                {nights} night{nights === 1 ? "" : "s"} · from{" "}
-                {formatDay(selection.start!)} to {formatDay(selection.end!)}
+                {t.book.inOut(
+                  t.common.nights(nights),
+                  formatDay(selection.start!, t.intl),
+                  formatDay(selection.end!, t.intl),
+                )}
               </p>
               <button
                 type="button"
                 className="btn-quiet mt-1"
                 onClick={() => setSelection({ start: null, end: null })}
               >
-                Start over
+                {t.common.startOver}
               </button>
             </>
           ) : (
             <p className="font-display text-[1.5rem] leading-[1.15] text-ink-faint">
               {selection.start
-                ? `From ${formatDay(selection.start)} — pick the end.`
-                : "Draw a range on the calendar."}
+                ? t.host.fromPickEnd(formatDay(selection.start, t.intl))
+                : t.host.drawRange}
             </p>
           )}
         </div>
 
         <div className="mt-6">
           <label htmlFor="reason" className="eyebrow mb-2 block">
-            What&rsquo;s the occasion
+            {t.host.occasion}
           </label>
           <input
             id="reason"
@@ -91,17 +95,17 @@ export function BlockForm({
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             maxLength={200}
-            placeholder="Parents visiting, working late…"
+            placeholder={t.host.occasionPlaceholder}
             className="field text-[14px]"
           />
           <p className="mt-1.5 text-xs text-ink-faint">
-            Guests see this if their dates get cancelled.
+            {t.host.occasionHint}
           </p>
         </div>
 
         {state.confirm ? (
           <div className="mt-6 border-2 border-orange bg-orange/5 p-4">
-            <p className="eyebrow !text-orange-deep">Hold on</p>
+            <p className="eyebrow !text-orange-deep">{t.host.holdOn}</p>
             <p className="mt-1.5 text-[15px] leading-snug text-ink">
               {state.confirm.title}
             </p>
@@ -118,19 +122,19 @@ export function BlockForm({
             <SubmitButton
               name="force"
               value="yes"
-              pendingLabel="Cancelling…"
+              pendingLabel={t.trips.cancelling}
               className="btn mt-4 w-full !border-orange !bg-orange"
             >
-              Block anyway &amp; cancel {state.confirm.items.length}
+              {t.host.blockAnyway(state.confirm.items.length)}
             </SubmitButton>
           </div>
         ) : (
           <SubmitButton
             disabled={!ready}
-            pendingLabel="Checking…"
+            pendingLabel={t.host.checking}
             className="btn mt-6 w-full"
           >
-            Hold these nights
+            {t.host.holdNights}
           </SubmitButton>
         )}
 
@@ -139,7 +143,7 @@ export function BlockForm({
 
       {blocks.length ? (
         <div className="mt-9 border-t border-rule pt-5">
-          <p className="eyebrow mb-3">Currently held</p>
+          <p className="eyebrow mb-3">{t.host.currentlyHeld}</p>
           <ul className="space-y-2.5">
             {blocks.map((block) => (
               <BlockRow key={block.id} block={block} />
@@ -153,6 +157,7 @@ export function BlockForm({
 }
 
 function BlockRow({ block }: { block: Block }) {
+  const t = useT();
   const [state, formAction] = useActionState(removeBlock, idle);
   if (state.ok) return null;
 
@@ -160,7 +165,7 @@ function BlockRow({ block }: { block: Block }) {
     <li className="flex items-start justify-between gap-3 border-b border-rule-soft pb-2.5">
       <div className="min-w-0">
         <p className="num text-[13px] tracking-wide">
-          {formatRange(block.startDate, block.endDate)}
+          {formatRange(block.startDate, block.endDate, t.intl)}
         </p>
         {block.reason ? (
           <p className="truncate text-[12px] text-ink-faint">{block.reason}</p>
@@ -169,7 +174,7 @@ function BlockRow({ block }: { block: Block }) {
       <form action={formAction}>
         <input type="hidden" name="blockId" value={block.id} />
         <SubmitButton pendingLabel="…" className="btn-quiet !text-[11.5px]">
-          Release
+          {t.host.release}
         </SubmitButton>
       </form>
     </li>

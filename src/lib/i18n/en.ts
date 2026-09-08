@@ -1,0 +1,432 @@
+export type Locale = "en" | "fr";
+
+export const en = {
+  locale: "en" as Locale,
+  intl: "en-US",
+  name: "English",
+
+  common: {
+    save: "Save",
+    cancel: "Cancel",
+    saving: "Saving…",
+    sending: "Sending…",
+    working: "Working…",
+    back: "Back",
+    startOver: "Start over",
+    optional: "optional",
+    nights: (n: number) => `${n} night${n === 1 ? "" : "s"}`,
+    people: (n: number) => `${n} ${n === 1 ? "person" : "people"}`,
+    privacy: "Privacy",
+    houseRules: "House rules",
+    signOut: "Sign out",
+    somethingWrong: "Something went wrong on our side. Try again in a moment.",
+    checkDetails: "Some of those details didn't look right. Have another go.",
+  },
+
+  status: {
+    approved: "Confirmed",
+    pending: "Awaiting answer",
+    denied: "Declined",
+    cancelled: "Cancelled",
+    blocked: "Held by host",
+  },
+
+  landing: {
+    title1: "Come stay",
+    title2: "a while.",
+    continueWith: (provider: string) => `Continue with ${provider}`,
+    noProvider:
+      "No sign-in provider is configured yet. Add Google or GitHub credentials to the environment and redeploy.",
+    aboutHeading: "What this is",
+    aboutBody: (app: string) =>
+      `${app} is a private booking page for one person's friends and family. Guests sign in, ask to be let in, and once the host approves them they can see which nights are free, request a stay of their own, bring up to two other people and leave a note. The host accepts or declines each request, and keeps dates for themselves when they need the room.`,
+    whyGoogleHeading: "Why it asks for a Google account.",
+    whyGoogleBody:
+      "Signing in with Google tells the site who you are — your name and email address — so the host knows whose booking is whose. That is the only thing it is used for.",
+    whyCalendarHeading: "Why it asks for Google Calendar.",
+    whyCalendarBody:
+      "Only the host is asked for this, and only to write confirmed stays onto a calendar of their choosing and send an invitation to everyone on the booking. Cancelling a stay deletes that event again. The app never reads or changes anything else on the calendar, and guests are never asked for calendar access.",
+    aboutTail: "Nothing is sold, advertised against, or shared beyond the services needed to run the site. The full detail is in the",
+    aboutAnd: "and the",
+  },
+
+  welcome: {
+    step: "Step one of two",
+    title1: "What should we",
+    title2: "call you?",
+    lede: (city: string) =>
+      `This is the name the host sees next to your dates, and the one that goes on the calendar when you come to ${city}.`,
+    nameLabel: "Your name",
+    namePlaceholder: "Jane Doe",
+    relationLabel: "How do you know the host?",
+    relationHint: "Optional, but it helps them place you.",
+    relationPlaceholder: "Cousin from Lyon",
+    submit: "Ask to be let in",
+    signedInAs: (email: string) => `Signed in as ${email}`,
+    notYou: "Not you?",
+  },
+
+  lobby: {
+    step: "Step two of two",
+    stampPending: "Pending",
+    stampDenied: "Declined",
+    titleWaiting: "Hang tight.",
+    titleDenied: "Not this time.",
+    waiting:
+      "The host has been emailed and needs to let you in before you can see the calendar. You'll get an email the moment that happens — nothing else to do.",
+    deniedPre: "Your request to join wasn't accepted. If that looks like a mistake, write to",
+    nameGiven: "Name given",
+    signedInAs: "Signed in as",
+    changeName: "Change my name",
+  },
+
+  nav: {
+    book: "Book a stay",
+    myTrips: "My trips",
+    frontDesk: "Front desk",
+    people: "People",
+    settings: "Settings",
+  },
+
+  calendar: {
+    weekdays: ["M", "T", "W", "T", "F", "S", "S"],
+    previousMonth: "Previous month",
+    nextMonth: "Next month",
+    free: "Free",
+    booked: "Booked",
+    heldByHost: "Kept by host",
+    requested: "Requested",
+    yourSelection: "Your selection",
+    held: "held",
+    you: "You",
+    trimmed: (day: string) =>
+      `Trimmed to ${day} — the nights after that are already taken.`,
+    tipBooked: (who: string) => `${who} — booked`,
+    tipRequested: (who: string) => `${who} — asked for this night`,
+    tipHeld: "The host is keeping this night",
+    tipPast: "In the past",
+    tipFree: "Free",
+  },
+
+  book: {
+    pickArrival: "Pick your arrival.",
+    arrivingOn: (day: string) => `Arriving ${day}.`,
+    thenLeaving: "Now the day you leave.",
+    inOut: (nights: string, inDay: string, outDay: string) =>
+      `${nights} · in ${inDay} · out ${outDay}`,
+    contested: (who: string) =>
+      `${who} has also asked for some of these nights. You can still send yours — the host decides.`,
+    whosComing: "Who's coming",
+    max: (n: number) => `+${n} max`,
+    theirName: "Their name",
+    theirEmail: "Email for the invite (optional)",
+    addSomeone: "+ Add someone",
+    remove: "Remove",
+    note: "Note",
+    notePlaceholder: "Landing late, bringing the dog…",
+    submit: "Ask to stay",
+    submitEdit: "Save changes",
+    sending: "Sending…",
+    editing: "Changing your request",
+    alreadyAnswered: "That request has already been answered.",
+    seeTrips: "See your trips",
+    nextStays: "Your next stays",
+    allOfThem: "All of them →",
+    nothingBooked: "Nothing booked yet.",
+  },
+
+  trips: {
+    title: "Trips",
+    comingUp: "Coming up",
+    bookAnother: "Book another →",
+    beenAndGone: "Been and gone",
+    closed: "Cancelled and declined",
+    nothingPlanned: "Nothing planned.",
+    pickSomeNights: "Pick some nights",
+    withdraw: "Withdraw",
+    cancel: "Cancel",
+    changeDates: "Change dates",
+    address: "Address",
+    confirmGuest: "Cancel this stay? The host will be told.",
+    confirmHost: "Cancel this stay and email the guest?",
+    reasonGuest: "A word of explanation (optional)",
+    reasonHost: "Why (optional)",
+    yesCancel: "Yes, cancel",
+    keepIt: "Keep it",
+    cancelling: "Cancelling…",
+  },
+
+  host: {
+    title1: "Who's",
+    title2: " coming.",
+    toAnswer: "To answer",
+    confirmedAhead: "Confirmed ahead",
+    nightsBooked: "Nights booked",
+    atTheDoor: "At the door",
+    requests: "Requests",
+    nothingWaiting: "Nothing waiting on you.",
+    peopleAtDoor: "People at the door",
+    everyone: "Everyone →",
+    confirmedStays: "Confirmed stays",
+    noConfirmed: "No confirmed stays ahead.",
+    blockTitle: "Block the calendar",
+    next: (range: string) => `next: ${range}`,
+    accept: "Accept",
+    decline: "Decline",
+    sendDecline: "Send decline",
+    declineReason: "Tell them why (optional)",
+    confirming: "Confirming…",
+    cancelStay: "Cancel stay",
+    calendarNotConnected:
+      "Google Calendar isn't connected, so accepted stays won't create events or send invitations.",
+    connectNow: "Connect it now",
+    noAddress:
+      "You haven't set an address yet — guests can't see where to go.",
+    addIt: "Add it",
+    keepNights: "Keep nights for yourself",
+    drawRange: "Draw a range on the calendar.",
+    fromPickEnd: (day: string) => `From ${day} — pick the end.`,
+    occasion: "What's the occasion",
+    occasionPlaceholder: "Parents visiting, working late…",
+    occasionHint: "Guests see this if their dates get cancelled.",
+    holdNights: "Hold these nights",
+    checking: "Checking…",
+    drawOver:
+      "You can draw over nights that are already taken. Nothing is cancelled until you say so.",
+    currentlyHeld: "Currently held",
+    release: "Release",
+    holdOn: "Hold on",
+    blockAnyway: (n: number) => `Block anyway & cancel ${n}`,
+  },
+
+  people: {
+    title: "People",
+    atTheDoor: "At the door",
+    backToDesk: "Back to the desk →",
+    nobodyWaiting: "Nobody is waiting.",
+    letIn: "Let in",
+    nobodyLetIn: "Nobody has been let in yet.",
+    turnedAway: "Turned away",
+    letThemIn: "Let them in",
+    turnAway: "Turn away",
+    removeAccess: "Remove access",
+    removeWarning: "Removing access also cancels their upcoming stays.",
+    remove: "Remove",
+    keep: "Keep",
+    letInAfterAll: "Let them in after all",
+    opening: "Opening…",
+    removing: "Removing…",
+    host: "host",
+    joined: (date: string) => `Joined ${date}`,
+    stays: (n: number) => `${n} stay${n === 1 ? "" : "s"}`,
+    unnamed: "Unnamed",
+  },
+
+  settings: {
+    title: "Settings",
+    addressSection: "Your address",
+    addressLabel: "Address",
+    addressHint:
+      "Everyone you've let in can see this. Changing it emails anyone with a confirmed stay ahead.",
+    gettingInLabel: "Getting in",
+    gettingInHint: "Door code, which buzzer, where to park, the cat's name.",
+    gettingInPlaceholder: "Buzzer 4B. Keys under the blue pot if I'm out.",
+    welcomeLabel: "A word for the booking page",
+    welcomeHint: "Shown above the calendar. Leave empty for none.",
+    welcomePlaceholder:
+      "The spare room fits two. August is chaos — sorry in advance.",
+    calendarSection: "Google Calendar",
+    connectedAs: "Connected as",
+    connectedBody:
+      "Accepting a stay creates an event and invites everyone on it; cancelling deletes it.",
+    writesTo: "Stays are written to",
+    useCalendar: "Use this calendar",
+    disconnect: "Disconnect",
+    connectBody:
+      "Connect a Google account so accepted stays appear on your calendar and everyone gets an invitation.",
+    connect: "Connect Google Calendar",
+    noWritable:
+      "No writable calendars came back from Google. Accepted stays will land on the primary calendar.",
+    wiring: "What's switched on",
+    signIn: "Sign-in",
+    email: "Email",
+    calendar: "Calendar",
+    hostAccount: "Host account",
+    noneConfigured: "None configured",
+    notConnected: "Not connected",
+    primaryCalendar: "Primary calendar",
+    alertsGoTo: (email: string) =>
+      `Alerts about requests, cancellations and new people go to ${email}.`,
+    backToDesk: "Back to the front desk",
+    language: "Language",
+    calendarFlash: {
+      connected: "Google Calendar is connected.",
+      denied: "Google didn't grant access — nothing changed.",
+      state: "That link expired. Try connecting again.",
+      failed: "The connection failed. Check the server logs and try again.",
+      "missing-client": "Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET first.",
+    } as Record<string, string>,
+  },
+
+  email: {
+    dates: "Dates",
+    length: "Length",
+    lengthValue: (nights: string, arrive: string, leave: string) =>
+      `${nights} — arriving ${arrive}, leaving ${leave}`,
+    who: "Who",
+    note: "Note",
+    reason: "Reason",
+    name: "Name",
+    signedInAs: "Signed in as",
+    saysTheyAre: "Says they are",
+    where: "Where",
+    gettingIn: "Getting in",
+    address: "Address",
+    footer: (app: string, city: string) =>
+      `You are receiving this because you have an account on ${app}, the private booking page for visits to ${city}.`,
+    seeYourTrip: "See your trip",
+    seeYourTrips: "See your trips",
+    reviewRequest: "Review the request",
+    acceptOrDecline: "Accept or decline",
+    reviewIt: "Review it",
+    chooseDates: "Choose your dates",
+    tryOther: "Try other dates",
+    openCalendar: "Open the calendar",
+    pickNew: "Pick new dates",
+    newMemberSubject: (name: string) => `${name} wants to visit`,
+    newMemberHeading: "Someone new knocked",
+    newMemberIntro: (name: string, city: string) =>
+      `${name} asked to join your ${city} page. Nobody can see the calendar until you let them in.`,
+    approvedSubject: (city: string) => `You're in — come visit ${city}`,
+    approvedHeading: "You're in",
+    approvedIntro: "Your account is approved. Pick the dates that suit you and send a request.",
+    approvedBody:
+      "Dates that are already taken are greyed out on the calendar. You can bring other people and leave a note with anything worth knowing.",
+    deniedSubject: (app: string) => `About your request to ${app}`,
+    deniedHeading: "Not this time",
+    deniedIntro:
+      "Your request to join was declined. If you think that is a mistake, reply to this email.",
+    requestedSubject: (name: string, range: string) => `${name} wants ${range}`,
+    requestedHeading: "New stay request",
+    requestedIntro: (name: string, nights: string) => `${name} asked for ${nights}.`,
+    receivedSubject: (range: string) => `Request sent — ${range}`,
+    receivedHeading: "Request sent",
+    receivedIntro:
+      "Your dates are held while the host has a look. You'll get an email either way.",
+    updatedSubject: (name: string) => `${name} changed their request`,
+    updatedHeading: "A request was edited",
+    updatedMoved: (from: string, to: string) => `Moved from ${from} to ${to}.`,
+    updatedSame: "The details changed, the dates did not.",
+    confirmedSubject: (range: string, city: string) => `Confirmed — ${range} in ${city}`,
+    confirmedHeading: "You're booked",
+    confirmedIntro: (day: string) => `See you on ${day}.`,
+    confirmedCalendar:
+      "A calendar invitation is on its way to everyone on the reservation.",
+    declinedSubject: (range: string) => `About ${range}`,
+    declinedHeading: "Those dates won't work",
+    declinedIntro:
+      "The host can't host those particular dates. Other dates on the calendar are still open.",
+    cancelledSubject: (name: string, range: string) => `${name} cancelled ${range}`,
+    cancelledHeadingConfirmed: "A confirmed stay was cancelled",
+    cancelledHeadingRequest: "A request was withdrawn",
+    cancelledIntro: (name: string) => `${name} cancelled. Those nights are open again.`,
+    byHostSubject: (range: string) => `Cancelled — ${range}`,
+    byHostHeading: "Your stay was cancelled",
+    byHostIntro:
+      "Something came up on the host's side and these dates are no longer available.",
+    byHostBody:
+      "Any calendar invitation for these dates has been removed. The rest of the calendar is still open, so pick another window whenever you like.",
+    addressSubject: (city: string) => `New address for your ${city} stay`,
+    addressHeading: "The address changed",
+    addressIntro: (range: string) => `Where to go for ${range}:`,
+    blockReason: (reason: string) =>
+      `The host needs the place on those dates — ${reason}`,
+    blockReasonPlain: "The host needs the place on those dates.",
+    accessRemoved: "Your access to the booking page was removed.",
+  },
+
+  block: {
+    conflictTitle: (n: number) =>
+      `${n} ${n === 1 ? "stay is" : "stays are"} already on those dates`,
+    conflictDetail:
+      "Blocking these nights will cancel them. Everyone affected gets an email, and any calendar invitations are withdrawn.",
+  },
+
+  legal: {
+    updated: (date: string) => `Last updated ${date}`,
+    backToDoor: "Back to the door",
+    privacyDate: "8 September 2026",
+  },
+
+  errors: {
+    signedOut: "You are signed out. Reload the page.",
+    notApproved: "Your account is still waiting for approval.",
+    hostOnly: "Only the host can do that.",
+    hostCannotBook:
+      "You're the host — block the dates you need instead of booking them.",
+    nameTooShort: "Give us at least two characters.",
+    nameTooLong: "That name is a little long.",
+    pickBothDates: "Pick an arrival and a departure date on the calendar.",
+    arrivalPast: "That arrival date is in the past.",
+    departureBeforeArrival:
+      "The departure date has to be after the arrival date.",
+    tooLong: (nights: number, max: number) =>
+      `That's ${nights} nights. Anything longer than ${max} is worth a phone call instead.`,
+    beyondHorizon: "That's further ahead than the calendar goes.",
+    badEmail: (email: string) => `"${email}" doesn't look like an email address.`,
+    namesTooLong: "Those names are too long.",
+    tooManyCompanions: (max: number) =>
+      `You can bring at most ${max} other people. Ask the host if you need more room.`,
+    noteTooLong: "That note is longer than it needs to be.",
+    heldByHost: (range: string) =>
+      `The host has kept ${range} for themselves. Those nights aren't bookable.`,
+    alreadyBooked: (range: string) =>
+      `${range} is already booked. Pick nights that are still open on the calendar.`,
+    selfOverlap: (range: string) =>
+      `You already have a stay on ${range}. Change that one instead of adding a second.`,
+    tripGone: "That trip no longer exists.",
+    notYourTrip: "That isn't your trip.",
+    onlyPendingEditable:
+      "Only requests the host hasn't answered yet can be edited. Cancel it and send a new one.",
+    requestGone: "That request no longer exists.",
+    alreadyDecided: (status: string) => `That request is already ${status}.`,
+    unblockFirst: (range: string) =>
+      `You've kept ${range} for yourself. Remove that block first if you want to accept this.`,
+    collides: (range: string) =>
+      `Those nights collide with a stay you already confirmed (${range}). Cancel that one first.`,
+    pickRange: "Pick a first and last night on the calendar.",
+    endAfterStart: "The end of the block has to come after the start.",
+    unknownDecision: "Unknown decision.",
+    noSelfModerate: "You can't moderate yourself.",
+    personGone: "That person no longer has an account.",
+    pickCalendar: "Pick a calendar.",
+    calendarGone: "That calendar is no longer available on this account.",
+  },
+
+  ok: {
+    saved: "Saved.",
+    requestSent: "Request sent. You'll get an email as soon as the host answers.",
+    requestUpdated: "Request updated.",
+    alreadyCancelled: "Already cancelled.",
+    alreadyDeclined: "That request was already declined.",
+    cancelledByHost: "Cancelled, and the guest has been told.",
+    cancelledByGuest: "Cancelled. The host has been notified.",
+    declined: (name: string) => `Declined. ${name} have been told.`,
+    accepted: "Accepted. Invitations are on their way.",
+    acceptedNoCalendar: (error: string) =>
+      `Accepted and the guest has been emailed — but the calendar event failed: ${error}`,
+    nightsYours: "Those nights are yours.",
+    blockedAndCancelled: (n: number) =>
+      `Blocked, and ${n} ${n === 1 ? "stay was" : "stays were"} cancelled.`,
+    nightsOpen: "Those nights are open again.",
+    canBookNow: (name: string) => `${name} can book now.`,
+    accessRemoved: "Access removed.",
+    accessRemovedWithTrips: (n: number) =>
+      `Access removed, and ${n} upcoming ${n === 1 ? "stay was" : "stays were"} cancelled.`,
+    addressEmailed: (n: number) =>
+      `Saved. ${n} ${n === 1 ? "guest" : "guests"} with an upcoming stay were emailed the new address.`,
+    calendarChosen: (name: string) => `New stays will land on "${name}".`,
+  },
+};
+
+export type Dict = typeof en;

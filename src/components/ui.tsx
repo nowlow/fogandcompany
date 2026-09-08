@@ -70,22 +70,20 @@ const STATUS_STYLES: Record<string, string> = {
   blocked: "text-orange border-orange/35 bg-orange/5",
 };
 
-const STATUS_WORDS: Record<string, string> = {
-  approved: "Confirmed",
-  pending: "Awaiting answer",
-  denied: "Declined",
-  cancelled: "Cancelled",
-  blocked: "Held by host",
-};
-
-export function StatusChip({ status }: { status: string }) {
+export function StatusChip({
+  status,
+  label,
+}: {
+  status: string;
+  label: string;
+}) {
   return (
     <span
       className={`inline-flex items-center border px-2 py-[3px] text-[10.5px] font-semibold uppercase tracking-[0.16em] ${
         STATUS_STYLES[status] ?? STATUS_STYLES.cancelled
       }`}
     >
-      {STATUS_WORDS[status] ?? status}
+      {label}
     </span>
   );
 }

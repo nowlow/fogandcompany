@@ -131,9 +131,7 @@ export async function loadCalendar(
     const mine = t.userId === viewer.id;
     const full = t.guestName ?? t.guestFallback;
     const extras = t.companions?.length ?? 0;
-    const who = mine
-      ? "You"
-      : `${firstName(full)}${extras ? ` +${extras}` : ""}`;
+    const who = `${firstName(full)}${extras ? ` +${extras}` : ""}`;
     const target = t.status === "approved" ? booked : requested;
     for (const night of nightsIn(t.startDate, t.endDate)) {
       target[night] = { who, mine, tripId: t.id };

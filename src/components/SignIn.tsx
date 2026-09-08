@@ -1,5 +1,6 @@
 import { startSignIn } from "@/actions/auth";
 import { enabledProviders } from "@/lib/auth";
+import { getDict } from "@/lib/i18n";
 
 function ProviderMark({ id }: { id: string }) {
   if (id === "google") {
@@ -37,17 +38,18 @@ function ProviderMark({ id }: { id: string }) {
   );
 }
 
-const LABEL: Record<string, string> = {
-  google: "Continue with Google",
-  github: "Continue with GitHub",
+const PROVIDER_NAME: Record<string, string> = {
+  google: "Google",
+  github: "GitHub",
 };
 
-export function SignIn({ next = "/stay" }: { next?: string }) {
+export async function SignIn({ next = "/stay" }: { next?: string }) {
+  const t = await getDict();
+
   if (!enabledProviders.length) {
     return (
       <p className="border-l-2 border-orange py-2 pl-3 text-sm text-orange-deep">
-        No sign-in provider is configured yet. Add Google or GitHub credentials
-        to the environment and redeploy.
+        {t.landing.noProvider}
       </p>
     );
   }
@@ -63,7 +65,7 @@ export function SignIn({ next = "/stay" }: { next?: string }) {
             className={`btn w-full ${i > 0 ? "btn-ghost" : ""}`}
           >
             <ProviderMark id={provider.id} />
-            {LABEL[provider.id] ?? `Continue with ${provider.name}`}
+            {t.landing.continueWith(PROVIDER_NAME[provider.id] ?? provider.name)}
           </button>
         </form>
       ))}

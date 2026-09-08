@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { saveProfile } from "@/actions/account";
 import { idle } from "@/actions/state";
 import { SubmitButton, Notice, Labelled } from "./form";
+import { useT } from "./I18n";
 
 export function WelcomeForm({
   defaultName,
@@ -17,6 +18,7 @@ export function WelcomeForm({
 }) {
   const [state, formAction] = useActionState(saveProfile, idle);
   const router = useRouter();
+  const t = useT();
 
   useEffect(() => {
     if (state.ok) router.replace(redirectTo);
@@ -24,7 +26,7 @@ export function WelcomeForm({
 
   return (
     <form action={formAction} className="mt-8 space-y-7">
-      <Labelled label="Your name" htmlFor="displayName">
+      <Labelled label={t.welcome.nameLabel} htmlFor="displayName">
         <input
           id="displayName"
           name="displayName"
@@ -33,27 +35,27 @@ export function WelcomeForm({
           minLength={2}
           maxLength={60}
           autoFocus
-          placeholder="Jane Doe"
+          placeholder={t.welcome.namePlaceholder}
           className="field !text-[22px]"
         />
       </Labelled>
 
       <Labelled
-        label="How do you know the host?"
+        label={t.welcome.relationLabel}
         htmlFor="relationship"
-        hint="Optional, but it helps them place you."
+        hint={t.welcome.relationHint}
       >
         <input
           id="relationship"
           name="relationship"
           defaultValue={defaultRelationship}
           maxLength={120}
-          placeholder="Cousin from Lyon"
+          placeholder={t.welcome.relationPlaceholder}
           className="field"
         />
       </Labelled>
 
-      <SubmitButton pendingLabel="Sending…">Ask to be let in</SubmitButton>
+      <SubmitButton pendingLabel={t.common.sending}>{t.welcome.submit}</SubmitButton>
       <Notice state={state} />
     </form>
   );

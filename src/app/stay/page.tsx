@@ -8,11 +8,12 @@ import { SectionHeading, Empty } from "@/components/ui";
 import { loadCalendar, upcomingTripsForUser } from "@/lib/availability";
 import { getSettings } from "@/lib/settings";
 import { MAX_COMPANIONS } from "@/lib/constants";
+import { getDict } from "@/lib/i18n";
 import { db } from "@/lib/db";
 import { trips } from "@/lib/schema";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Book a stay" };
+
 
 export default async function Stay({
   searchParams,
@@ -22,7 +23,8 @@ export default async function Stay({
   const user = await requireGuest();
   const { edit } = await searchParams;
 
-  const [data, settings, upcoming, editing] = await Promise.all([
+  const [t, data, settings, upcoming, editing] = await Promise.all([
+    getDict(),
     loadCalendar(user),
     getSettings(),
     upcomingTripsForUser(user.id),
@@ -46,9 +48,9 @@ export default async function Stay({
 
       {edit && !editing ? (
         <p className="mb-6 border-l-2 border-orange py-2 pl-3 text-[13.5px] text-orange-deep">
-          That request has already been answered.{" "}
+          {t.book.alreadyAnswered}{" "}
           <Link className="underline" href="/trips">
-            See your trips
+            {t.book.seeTrips}
           </Link>
           .
         </p>
@@ -62,10 +64,10 @@ export default async function Stay({
 
       <section className="mt-16">
         <SectionHeading
-          title="Your next stays"
+          title={t.book.nextStays}
           action={
             <Link href="/trips" className="btn-quiet">
-              All of them →
+              {t.book.allOfThem}
             </Link>
           }
         />
@@ -76,7 +78,7 @@ export default async function Stay({
             ))}
           </div>
         ) : (
-          <Empty>Nothing booked yet.</Empty>
+          <Empty>{t.book.nothingBooked}</Empty>
         )}
       </section>
     </Shell>
